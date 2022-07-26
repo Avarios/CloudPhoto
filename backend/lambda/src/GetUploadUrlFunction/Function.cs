@@ -18,15 +18,16 @@ namespace getUploadUrl
         /// </summary>
         public Function()
         {
-            s3Client = new AmazonS3Client();
+            S3Client = new AmazonS3Client();
+            BucketName = Environment.GetEnvironmentVariable("APP_BUCKETNAME");
         }
 
         /// <summary>
         /// Amazon S3 Client to access buckrt function
         /// </summary>
         /// <returns>S3Client</returns>
-        private AmazonS3Client s3Client;
-
+        private AmazonS3Client S3Client { get; set; }
+        private string BucketName { get; set; }
         /// <summary>
         /// Get signed upload urls for x files that has to be uploaded
         /// </summary>
@@ -37,16 +38,17 @@ namespace getUploadUrl
         {
             try
             {
-                // Bucketname is injected from previous Lambda , or not i am not sure yet :D 
-                var bucketName = request.Headers["bucketname"];
+                var requestingUser = request.RequestContext.Authorizer.Jwt.Claims["username"];
                 var files = JsonSerializer.Deserialize<List<string>>(request.Body);
                 var preSignedUrls = new List<string>();
-                files.ForEach(x => {
-                    var fileKey = $"{x}_{new Random().Next(10000,99999)}";
-                    preSignedUrls.Add(GetPreSignedUrl(bucketName,fileKey));
+                files.ForEach(x =>
+                {
+                    var fileKey = $"{x}_{new Random().Next(10000, 99999)}";
+                    preSignedUrls.Add(GetPreSignedUrl(fileKey, requestingUser));
                 });
 
-                return new APIGatewayHttpApiV2ProxyResponse{
+                return new APIGatewayHttpApiV2ProxyResponse
+                {
                     Body = JsonSerializer.Serialize(preSignedUrls),
                     StatusCode = (int)HttpStatusCode.OK
                 };
@@ -54,33 +56,40 @@ namespace getUploadUrl
             catch (JsonException ex)
             {
                 context.Logger.Log(ex.ToString());
-                return new APIGatewayHttpApiV2ProxyResponse{
+                return new APIGatewayHttpApiV2ProxyResponse
+                {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Body = "Could not read from the JSON"
                 };
             }
-            catch (ArgumentNullException ex) {
+            catch (ArgumentNullException ex)
+            {
                 context.Logger.Log(ex.ToString());
-                return new APIGatewayHttpApiV2ProxyResponse{
+                return new APIGatewayHttpApiV2ProxyResponse
+                {
                     StatusCode = (int)HttpStatusCode.BadRequest,
                     Body = "Please provide files"
                 };
             }
-            catch (Amazon.S3.AmazonS3Exception s) {
+            catch (Amazon.S3.AmazonS3Exception s)
+            {
                 context.Logger.Log(s.ToString());
-                return new APIGatewayHttpApiV2ProxyResponse{
+                return new APIGatewayHttpApiV2ProxyResponse
+                {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Body = "Not able to get pre signed Urls"
                 };
             }
         }
-        private string GetPreSignedUrl(string bucketName, string fileKey){
-            var request = new Amazon.S3.Model.GetPreSignedUrlRequest {
-                BucketName= bucketName,
+        private string GetPreSignedUrl(string fileKey, string username)
+        {
+            var request = new Amazon.S3.Model.GetPreSignedUrlRequest
+            {
+                BucketName = this.BucketName,
                 Expires = DateTime.Now.AddHours(1),
-                Key = fileKey
-            };     
-            return s3Client.GetPreSignedURL(request);
+                Key = $"{username}/{fileKey}"
+            };
+            return S3Client.GetPreSignedURL(request);
         }
     }
 }
