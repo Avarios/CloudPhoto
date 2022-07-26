@@ -30,18 +30,22 @@ namespace getUploadUrl
         /// <summary>
         /// Get signed upload urls for x files that has to be uploaded
         /// </summary>
-        /// <param name="input"></param>
-        /// <param name="context"></param>
+        /// <param name="request">APIGatewayHttpApiV2ProxyRequest</param>
+        /// <param name="context">ILambdaContext</param>
         /// <returns>A list of Urls for FileUploading</returns>
         public APIGatewayHttpApiV2ProxyResponse FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
             try
             {
-                var bucketName = getBucketNameForUser(request.RequestContext.Authorizer.Jwt.Claims["username"]);
-                var files = JsonSerializer.Deserialize<List<FileModel>>(request.Body);
-                var preSignedUrls = files.ConvertAll<string>(x => {
-                    return getPreSignedUrl(x.FileName);
+                // Bucketname is injected from previous Lambda , or not i am not sure yet :D 
+                var bucketName = request.Headers["bucketname"];
+                var files = JsonSerializer.Deserialize<List<string>>(request.Body);
+                var preSignedUrls = new List<string>();
+                files.ForEach(x => {
+                    var fileKey = $"{x}_{new Random().Next(10000,99999)}";
+                    preSignedUrls.Add(GetPreSignedUrl(bucketName,fileKey));
                 });
+
                 return new APIGatewayHttpApiV2ProxyResponse{
                     Body = JsonSerializer.Serialize(preSignedUrls),
                     StatusCode = (int)HttpStatusCode.OK
@@ -70,20 +74,13 @@ namespace getUploadUrl
                 };
             }
         }
-
-        private string getBucketNameForUser(string username) {
-
-        }
-
-        private string getPreSignedUrl(string filename){
+        private string GetPreSignedUrl(string bucketName, string fileKey){
             var request = new Amazon.S3.Model.GetPreSignedUrlRequest {
-
-            };
+                BucketName= bucketName,
+                Expires = DateTime.Now.AddHours(1),
+                Key = fileKey
+            };     
+            return s3Client.GetPreSignedURL(request);
         }
-    }
-
-    public class FileModel
-    {
-        public string FileName { get; set; }
     }
 }

@@ -5,7 +5,7 @@
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/format-version-structure.html
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  getUploadUrl
+  GetUploadUrlFunction
 
 # Transform section specifies one or more macros that AWS CloudFormation uses to process your template
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
@@ -22,8 +22,8 @@ Resources:
   helloFromLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./src/getUploadUrl/
-      Handler: getUploadUrl::getUploadUrl.Function::FunctionHandler
+      CodeUri: ./src/GetUploadUrlFunction/
+      Handler: GetUploadUrlFunction::GetUploadUrlFunction.Function::FunctionHandler
       Runtime: dotnetcore3.1
       MemorySize: 256
       Timeout: 100
