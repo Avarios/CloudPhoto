@@ -1,5 +1,5 @@
 {
-  "body": ["a.jpg","b.jpg"],
+  "body":  "{\"album\":\"MyFirstPony\",\"files\": [\"a.jpg\",\"b.jpg\"]}",
   "resource": "/{proxy+}",
   "path": "/path/to/resource",
   "httpMethod": "POST",
