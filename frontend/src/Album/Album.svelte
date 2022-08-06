@@ -2,13 +2,12 @@
 	import Album from "./AlbumItem.svelte";
 	import { onMount } from "svelte";
 	import { each } from "svelte/internal";
-	import { toast } from "@zerodevx/svelte-toast";
 
 	let albums;
 
 	// Omly Faking API Call
 	onMount(async () => {
-		fetch("https://jsonplaceholder.typicode.com/albums1")
+		fetch("https://jsonplaceholder.typicode.com/albums")
 			.then((response) => {
 				if (response.status !== 200) {
 					throw new Error(`Server returned with ${response.status}`);
@@ -20,12 +19,7 @@
 			})
 			.catch((err) => {
 				console.log(err);
-				toast.push(err.message, {
-					theme: {
-						"--toastBackground": "#F56565",
-						"--toastBarBackground": "#C53030",
-					}
-				});
+				//TODO: Error handling with notifcation
 			});
 	});
 </script>
