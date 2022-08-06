@@ -2,15 +2,15 @@
 	import Album from "./AlbumItem.svelte";
 	import { onMount } from "svelte";
 	import { each } from "svelte/internal";
-	import { SvelteToast } from '@zerodevx/svelte-toast'
+	import { toast } from "@zerodevx/svelte-toast";
 
 	let albums;
 
 	// Omly Faking API Call
 	onMount(async () => {
-		fetch("https://jsonplaceholder.typicode.com/albums")
-			.then(response => {
-				if(response.status !== 200){
+		fetch("https://jsonplaceholder.typicode.com/albums1")
+			.then((response) => {
+				if (response.status !== 200) {
 					throw new Error(`Server returned with ${response.status}`);
 				}
 				return response.json();
@@ -20,6 +20,12 @@
 			})
 			.catch((err) => {
 				console.log(err);
+				toast.push(err.message, {
+					theme: {
+						"--toastBackground": "#F56565",
+						"--toastBarBackground": "#C53030",
+					}
+				});
 			});
 	});
 </script>
@@ -28,7 +34,7 @@
 	<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
 		{#if albums}
 			{#each albums as album}
-				<Album title={album.title} views={albums.length}/>
+				<Album title={album.title} views={albums.length} />
 			{/each}
 		{/if}
 	</div>
