@@ -1,8 +1,7 @@
 <script>
 	import Album from "./AlbumItem.svelte";
 	import { onMount } from "svelte";
-	import { each } from "svelte/internal";
-
+	
 	let albums;
 
 	// Omly Faking API Call
