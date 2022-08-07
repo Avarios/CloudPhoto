@@ -39,4 +39,8 @@ export class Authentication {
             console.log(result.userSub);
         })
     }
+
+    get currentUser ():CognitoUser {
+        return this.user || this.userPool.getCurrentUser();
+    }
 }

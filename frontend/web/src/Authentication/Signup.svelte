@@ -1,6 +1,6 @@
 <script lang="ts">
-    //import { Authentication } from './authentication';
-    //let auth = new Authentication();
+    import { Authentication } from './authentication';
+    let auth = new Authentication();
     let newUser = {
         email: "",
         firstName: "",
@@ -9,6 +9,7 @@
     };
     let onRegister = (e) => {
         e.preventDefault();
+        auth.registerUser(newUser.email,newUser.firstName,newUser.lastName,newUser.password);
     };
 </script>
 
