@@ -1,10 +1,10 @@
 <script lang="ts">
    import router from "page";
-   import routes from "./routes";
+   import {Routes} from "./routes";
 
    let page;
-
-   routes.forEach((route) => {
+   let routes = new Routes();
+   routes.getRoutes.forEach((route) => {
       router(route.path, () => { page = route.component });
    });
    router.start();
