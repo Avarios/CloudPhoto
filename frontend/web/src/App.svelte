@@ -1,11 +1,17 @@
 <script lang="ts">
    import router from "page";
-   import {Routes} from "./routes";
+   import { Routes } from "./routes";
 
    let page;
    let routes = new Routes();
    routes.getRoutes.forEach((route) => {
-      router(route.path, () => { page = route.component });
+      router(route.path, () => {
+         if(route.requireAuth){
+            
+         } else {
+            page = route.component;
+         }         
+      });
    });
    router.start();
 

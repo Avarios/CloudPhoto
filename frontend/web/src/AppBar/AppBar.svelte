@@ -16,6 +16,7 @@
 
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
           <li><a href="/home" class="nav-link px-2 text-secondary">Home</a></li>
+          <!-- Render only if user is authenticated -->
           <li><a href="/albums" class="nav-link px-2 text-white">Albums</a></li>
         </ul>
 

@@ -4,6 +4,7 @@ import Albums from './Album/Album.svelte'
 export interface Route {
     path: string,
     component: any
+    requireAuth?:boolean
 }
 
 export class Routes {
@@ -19,7 +20,8 @@ export class Routes {
             },
             {
                 component:Albums,
-                path:'/albums'
+                path:'/albums',
+                requireAuth:true
             }
         ]
     }
