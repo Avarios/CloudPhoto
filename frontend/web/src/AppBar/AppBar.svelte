@@ -1,6 +1,6 @@
-<script>
+<script lang="ts">
     import UserMenu from "./UserMenu.svelte";
-    let showMenu = false;
+    let showMenu:boolean = false;
     function toogleMenu(e) {
         console.log(e);
         showMenu = !showMenu;

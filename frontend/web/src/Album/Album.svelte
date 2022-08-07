@@ -1,9 +1,8 @@
-<script>
+<script lang="ts">
 	import Album from "./AlbumItem.svelte";
 	import { onMount } from "svelte";
 	
 	let albums;
-
 	// Omly Faking API Call
 	onMount(async () => {
 		fetch("https://jsonplaceholder.typicode.com/albums")
