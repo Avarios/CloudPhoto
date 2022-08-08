@@ -2,6 +2,7 @@ import Home from './Home/Home.svelte';
 import Albums from './Album/Album.svelte'
 import Login from './Authentication/Login.svelte';
 import Signup from './Authentication/Signup.svelte';
+import VerifyUser from './Authentication/VerifyUser.svelte';
 
 export interface Route {
     path: string,
@@ -33,6 +34,11 @@ export class Routes {
             {
                 component:Signup,
                 path:'/signup',
+                requireAuth:false
+            },
+            {
+                component:VerifyUser,
+                path:'/verify',
                 requireAuth:false
             }
         ]

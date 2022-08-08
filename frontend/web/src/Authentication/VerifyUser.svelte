@@ -3,10 +3,10 @@
     let auth = Authentication.Instance;
     let authData = {
         email: "",
-        password: "",
+        verificationCode: "",
     };
     let onLogin = () => {
-        auth.loginUser(authData.email,authData.password);
+        auth.verifyUser(authData.email,authData.verificationCode);
     };
 </script>
 
@@ -24,7 +24,7 @@
                 <div class="myform form ">
                     <div class="logo mb-3">
                         <div class="col-md-12 text-center">
-                            <h1>Login</h1>
+                            <h1>Verify User</h1>
                         </div>
                     </div>
                     <form
@@ -47,24 +47,17 @@
                             />
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputEmail1">Password</label>
+                            <label for="exampleInputEmail1">Verification Code</label>
                             <input
-                                type="password"
-                                name="password"
-                                id="password"
+                                type="text"
+                                name="code"
+                                id="code"
                                 class="form-control"
                                 required
                                 aria-describedby="emailHelp"
-                                placeholder="Enter Password"
-                                bind:value={authData.password}
+                                placeholder="Enter VerificationCode"
+                                bind:value={authData.verificationCode}
                             />
-                        </div>
-                        <div class="form-group">
-                            <p class="text-center">
-                                By signing up you accept our <a href="/login"
-                                    >Terms Of Use</a
-                                >
-                            </p>
                         </div>
                         <div class="col-md-12 text-center ">
                             <button

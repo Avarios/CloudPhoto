@@ -1,14 +1,13 @@
 <script lang="ts">
     import { Authentication } from './authentication';
-    let auth = new Authentication();
+    let auth = Authentication.Instance;
     let newUser = {
         email: "",
         firstName: "",
         lastName: "",
         password: "",
     };
-    let onRegister = (e) => {
-        e.preventDefault();
+    let onRegister = () => {
         auth.registerUser(newUser.email,newUser.firstName,newUser.lastName,newUser.password);
     };
 </script>
@@ -79,7 +78,7 @@
                         </div>
                         <div class="col-md-12 text-center mb-3">
                             <button
-                                onclick={onRegister}
+                                on:click|preventDefault={onRegister}
                                 type="submit"
                                 class=" btn btn-block mybtn btn-primary tx-tfm"
                                 >Create Account</button

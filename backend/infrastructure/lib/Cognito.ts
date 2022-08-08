@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
-import { CfnOutput, Duration, Stack } from 'aws-cdk-lib';
-import { AccountRecovery, Mfa, UserPool, UserPoolClient,UserPoolDomain } from 'aws-cdk-lib/aws-cognito';
+import { CfnOutput, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { AccountRecovery, Mfa, UserPool, UserPoolClient,UserPoolDomain, UserPoolEmail, VerificationEmailStyle } from 'aws-cdk-lib/aws-cognito';
 
 export class Cognito extends Construct {
     constructor(parent: Stack) {
@@ -8,7 +8,7 @@ export class Cognito extends Construct {
 
 
         let userPool = new UserPool(parent, 'CloudPhotoUserPool', {
-            accountRecovery: AccountRecovery.PHONE_AND_EMAIL,
+            accountRecovery: AccountRecovery.EMAIL_ONLY,
             mfa: Mfa.OPTIONAL,
             passwordPolicy: {
                 minLength: 8,
@@ -17,6 +17,16 @@ export class Cognito extends Construct {
                 requireLowercase: true,
                 requireUppercase: true,
                 tempPasswordValidity: Duration.days(1)
+            },
+            email:UserPoolEmail.withCognito('admin@cloudphoto.com'),
+            selfSignUpEnabled: true,
+            userVerification: {
+              emailSubject: 'Verify your email for CloudPhoto !',
+              emailBody: 'Thanks for signing up to CloudPhoto! Your verification code is {####}',
+              emailStyle: VerificationEmailStyle.CODE
+            },
+            signInAliases: {
+                email:true
             },
             userPoolName:"CloudPhotoUserPool",
             standardAttributes: {
@@ -37,11 +47,11 @@ export class Cognito extends Construct {
                 otp:true,
                 sms:false
             },
-            selfSignUpEnabled:true
+            removalPolicy:RemovalPolicy.DESTROY
         });
         let userPoolClient = new UserPoolClient(parent,'CloudPhotoUserPoolClient',{
             userPool:userPool,
-            authFlows: {userPassword:true}  
+            authFlows: {userPassword:true, userSrp:true}  
         });
         let userPoolDomain = new UserPoolDomain(parent,'CloudPhotoUserPoolDomain', {
             userPool,

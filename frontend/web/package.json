@@ -20,6 +20,8 @@
     "vite": "^3.0.0"
   },
   "dependencies": {
-    "amazon-cognito-identity-js": "^5.2.10"
+    "@aws-amplify/auth": "^4.6.1",
+    "amazon-cognito-identity-js": "^5.2.10",
+    "page": "^1.11.6"
   }
 }
