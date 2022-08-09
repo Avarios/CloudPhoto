@@ -144,6 +144,7 @@ export class Authentication {
         user.signOut(() => {
             this.user = undefined;
             this.cognitoUser = undefined;
+            this.localStorage.removeItem(STORAGE_USER_KEY);
         })
 
     }
