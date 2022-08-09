@@ -1,58 +1,57 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { Authentication } from '../Authentication/authentication';
-  import UserMenu from "./UserMenu.svelte";
-  let showMenu: boolean = false;
-  function toogleMenu(e) {
-    console.log(e);
-    showMenu = !showMenu;
-  }
+    import { onMount } from "svelte";
+    import { Authentication } from "../Authentication/authentication";
+    import UserMenu from "./UserMenu.svelte";
+    const auth = Authentication.Instance;
 
-  onMount(async () => {
-    let auth =  new Authentication();
-    console.log(auth.currentUser);
-  })
+    $: isAuthenticated = false;
+    $: username = "";
+
+    onMount(async () => {
+        isAuthenticated = auth.isAuthenticated;
+        username = auth.isAuthenticated ? auth.userInformation.firstName : "";
+    });
 </script>
 
-<header class="p-3 text-bg-dark">
-  <div class="container">
-    <div
-      class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"
-    >
-      <a
-        href="/"
-        class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none"
-      >
-        <svg
-          class="bi me-2"
-          width="40"
-          height="32"
-          role="img"
-          aria-label="Bootstrap"><use xlink:href="#bootstrap" /></svg
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/home">CloudPhoto</a>
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarCollapse"
+            aria-controls="navbarCollapse"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
         >
-      </a>
+            <span class="navbar-toggler-icon" />
+        </button>
 
-      <ul
-        class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
-      >
-        <li><a href="/home" class="nav-link px-2 text-secondary">Home</a></li>
-        <!-- Render only if user is authenticated -->
-        <li><a href="/albums" class="nav-link px-2 text-white">Albums</a></li>
-      </ul>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/home"
+                        >Home</a
+                    >
+                </li>
+                {#if isAuthenticated}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/albums">Albums</a>
+                    </li>
+                {/if}
+            </ul>
 
-      <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-        <input
-          type="search"
-          class="form-control form-control-dark text-bg-dark"
-          placeholder="Search..."
-          aria-label="Search"
-        />
-      </form>
-
-      <div class="text-end">
-        <a href="/login" class="btn btn-outline-light me-2">Login</a>
-        <a href="/signup" class="btn btn-warning">Signup</a>
-      </div>
+            {#if isAuthenticated}
+                <UserMenu userName={username} on:logout={auth.logout} />
+            {/if}
+            {#if !isAuthenticated}
+                <div class="text-end">
+                    <a href="/login" class="btn btn-outline-light me-2">Login</a
+                    >
+                    <a href="/signup" class="btn btn-warning">Signup</a>
+                </div>
+            {/if}
+        </div>
     </div>
-  </div>
-</header>
+</nav>

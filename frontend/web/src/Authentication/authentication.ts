@@ -14,35 +14,45 @@ export interface CloudPhotoUser {
 export class Authentication {
     private static instance: Authentication;
     private cognitoUser: CognitoUser;
-    private localStorage:Storage = window.localStorage;
+    private localStorage: Storage = window.localStorage;
     private user: CloudPhotoUser;
-    private userPool:CognitoUserPool;
+    private userPool: CognitoUserPool;
 
     private constructor() {
-        this.userPool =  new CognitoUserPool({
-            ClientId:COGNITO_CLIENTID,
-            UserPoolId:COGNITO_USERPOOLID,
-            Storage:this.localStorage
+        this.userPool = new CognitoUserPool({
+            ClientId: COGNITO_CLIENTID,
+            UserPoolId: COGNITO_USERPOOLID,
+            Storage: this.localStorage
         })
-        let storedUser = this.localStorage.getItem(STORAGE_USER_KEY);
-        if (storedUser) {      
-            this.user = JSON.parse(storedUser);
-            this.cognitoUser = new CognitoUser({
-                Pool: this.userPool,
-                Username:this.user.username
-            });
-            this.cognitoUser.getSession((err,sess:CognitoUserSession) => {
-                if(err){
-                    this.user = null;
-                    this.cognitoUser = null;
-                } else {
-                    if(!sess.isValid()){
+        const user = this.userPool.getCurrentUser();
+        if (user) {
+            const storedUser = this.localStorage.getItem(STORAGE_USER_KEY);
+            if (storedUser) {
+                this.user = JSON.parse(storedUser);
+                this.cognitoUser = new CognitoUser({
+                    Pool: this.userPool,
+                    Username: this.user.username
+                });
+                this.cognitoUser.getSession((err, sess: CognitoUserSession) => {
+                    if (err) {
                         this.user = null;
-                        this.localStorage.removeItem(STORAGE_USER_KEY)
+                        this.cognitoUser = null;
+                    } else {
+                        if (!sess.isValid()) {
+                            this.user = null;
+                            this.localStorage.removeItem(STORAGE_USER_KEY)
+                        } else {
+                            const isValid = sess.isValid();
+                            console.log(isValid);
+                        }
                     }
-                }
-            });
+                });
+            }
+        } else {
+            this.user = undefined;
+            this.cognitoUser = undefined;
         }
+
     }
 
     public static get Instance(): Authentication {
@@ -53,7 +63,7 @@ export class Authentication {
     }
 
     registerUser = async (email: string, givenName: string, familyName: string, password: string) => {
-        let attributeList: CognitoUserAttribute[] = [
+        const attributeList: CognitoUserAttribute[] = [
             new CognitoUserAttribute({
                 Name: 'email',
                 Value: email
@@ -83,8 +93,8 @@ export class Authentication {
     }
 
     loginUser = (email: string, password: string) => {
-        let user = new CognitoUser({ Pool: this.userPool, Username: email });
-        let authenticationDetails = new AuthenticationDetails({ Username: email, Password: password });
+        const user = new CognitoUser({ Pool: this.userPool, Username: email });
+        const authenticationDetails = new AuthenticationDetails({ Username: email, Password: password });
         user.authenticateUser(authenticationDetails, {
             onSuccess: async (result: CognitoUserSession) => {
                 if (result.isValid()) {
@@ -116,7 +126,7 @@ export class Authentication {
 
 
     verifyUser = (email: string, code: string) => {
-        let user = new CognitoUser({ Pool: this.userPool, Username: email });
+        const user = new CognitoUser({ Pool: this.userPool, Username: email });
         user.confirmRegistration(code, false, (err, result) => {
             if (err) {
                 console.log(err.message, JSON.stringify(err));
@@ -129,13 +139,22 @@ export class Authentication {
         this.cognitoUser = this.userPool.getCurrentUser();
     }
 
-    fetchUserAttributes = async (): Promise<CloudPhotoUser> => {
+    logout = () => {
+        const user = new CognitoUser({ Pool: this.userPool, Username: this.user.username });
+        user.signOut(() => {
+            this.user = undefined;
+            this.cognitoUser = undefined;
+        })
+
+    }
+
+    private fetchUserAttributes = async (): Promise<CloudPhotoUser> => {
         return new Promise((resolve, reject) => {
             this.cognitoUser.getUserAttributes((err, attributes) => {
                 if (err) {
                     reject(err);
                 }
-                let user: CloudPhotoUser = {
+                const user: CloudPhotoUser = {
                     email: attributes.find(x => x.Name == 'email').Value,
                     firstName: attributes.find(x => x.Name == 'given_name').Value,
                     lastname: attributes.find(x => x.Name == 'family_name').Value,
@@ -149,7 +168,7 @@ export class Authentication {
     }
 
     get isAuthenticated(): boolean {
-        return !!this.user;
+        return !!this.cognitoUser;
     }
 
     get userInformation(): CloudPhotoUser {

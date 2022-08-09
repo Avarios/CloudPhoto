@@ -24,7 +24,7 @@ export class Routes {
             {
                 component:Albums,
                 path:'/albums',
-                requireAuth:true
+                requireAuth:false
             },
             {
                 component:Login,

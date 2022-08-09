@@ -20,12 +20,13 @@
 <header>
    <AppBar />
 </header>
-<body class="d-flex flex-column">
-   <div class="container-fluid">
-      <!-- Injecting Components coming from page.js as a router -->
-      <svelte:component this={page} />
-   </div>
+<main class="flex-shrink-0">
+   <svelte:component this={page} />
+</main>
 
-   <!-- Define Footer in own componente -->
-   <footer class="fixed-bottom">MYFOOTER</footer>
-</body>
+<!-- Define Footer in own componente -->
+<footer class="footer mt-auto py-3 bg-light fixed-bottom">
+   <div class="container">
+      <span class="text-muted">Place sticky footer content here.</span>
+   </div>
+</footer>
