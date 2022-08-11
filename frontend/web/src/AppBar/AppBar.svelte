@@ -1,15 +1,25 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { Authentication } from "../Authentication/authentication";
+    import {
+        Authentication,
+        type CloudPhotoUser,
+    } from "../Authentication/authentication";
     import UserMenu from "./UserMenu.svelte";
+
     const auth = Authentication.Instance;
 
     $: isAuthenticated = false;
     $: username = "";
 
+    auth.loginUser;
+
     onMount(async () => {
-        isAuthenticated = auth.isAuthenticated;
-        username = auth.isAuthenticated ? auth.userInformation.firstName : "";
+        auth.userSubscription.subscribe((x: CloudPhotoUser) => {
+            isAuthenticated = x != undefined;
+            if (isAuthenticated) {
+                username = x.firstName;
+            }
+        });
     });
 </script>
 

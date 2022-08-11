@@ -1,4 +1,5 @@
 import { AuthenticationDetails, CognitoUser, CognitoUserAttribute, CognitoUserPool, CognitoUserSession, CookieStorage, type ISignUpResult } from 'amazon-cognito-identity-js';
+import { Observable } from '../Observable';
 import { COGNITO_CLIENTID, COGNITO_USERPOOLID } from '../configuration';
 
 const STORAGE_USER_KEY = 'user';
@@ -10,46 +11,47 @@ export interface CloudPhotoUser {
     username: string;
 }
 
-
 export class Authentication {
     private static instance: Authentication;
     private cognitoUser: CognitoUser;
     private localStorage: Storage = window.localStorage;
-    private user: CloudPhotoUser;
     private userPool: CognitoUserPool;
+    private user: Observable<CloudPhotoUser>
+
 
     private constructor() {
         this.userPool = new CognitoUserPool({
             ClientId: COGNITO_CLIENTID,
             UserPoolId: COGNITO_USERPOOLID,
             Storage: this.localStorage
-        })
-        const user = this.userPool.getCurrentUser();
-        if (user) {
+        });
+        const curUser = this.userPool.getCurrentUser();
+        this.user = new Observable<CloudPhotoUser>();
+        if (curUser) {
             const storedUser = this.localStorage.getItem(STORAGE_USER_KEY);
             if (storedUser) {
-                this.user = JSON.parse(storedUser);
+                this.user.value = JSON.parse(storedUser);
                 this.cognitoUser = new CognitoUser({
                     Pool: this.userPool,
-                    Username: this.user.username
+                    Username: this.user.value.username
                 });
                 this.cognitoUser.getSession((err, sess: CognitoUserSession) => {
                     if (err) {
-                        this.user = null;
+                        this.user.value = null;
                         this.cognitoUser = null;
+
                     } else {
                         if (!sess.isValid()) {
-                            this.user = null;
+                            this.user.value = null;
                             this.localStorage.removeItem(STORAGE_USER_KEY)
                         } else {
-                            const isValid = sess.isValid();
-                            console.log(isValid);
+
                         }
                     }
                 });
             }
         } else {
-            this.user = undefined;
+            this.user.value = undefined;
             this.cognitoUser = undefined;
         }
 
@@ -99,8 +101,8 @@ export class Authentication {
             onSuccess: async (result: CognitoUserSession) => {
                 if (result.isValid()) {
                     this.cognitoUser = user;
-                    this.user = await this.fetchUserAttributes();
-                    this.localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(this.user));
+                    this.user.value = await this.fetchUserAttributes();
+                    this.localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(this.user.value));
                 } else {
                     //TODO: Error Handling
                 }
@@ -140,9 +142,9 @@ export class Authentication {
     }
 
     logout = () => {
-        const user = new CognitoUser({ Pool: this.userPool, Username: this.user.username });
+        const user = new CognitoUser({ Pool: this.userPool, Username: this.user.value.username });
         user.signOut(() => {
-            this.user = undefined;
+            this.user.value = undefined;
             this.cognitoUser = undefined;
             this.localStorage.removeItem(STORAGE_USER_KEY);
         })
@@ -168,11 +170,15 @@ export class Authentication {
 
     }
 
+    get userSubscription(): Observable<CloudPhotoUser> {
+        return this.user;
+    }
+
     get isAuthenticated(): boolean {
         return !!this.cognitoUser;
     }
 
     get userInformation(): CloudPhotoUser {
-        return this.user;
+        return this.user.value;
     }
 }
