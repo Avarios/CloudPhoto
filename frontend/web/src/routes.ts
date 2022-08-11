@@ -1,8 +1,8 @@
-import Home from './Home/Home.svelte';
-import Albums from './Album/Album.svelte'
-import Login from './Authentication/Login.svelte';
-import Signup from './Authentication/Signup.svelte';
-import VerifyUser from './Authentication/VerifyUser.svelte';
+import Home from './components/Home/Home.svelte';
+import Albums from './components/Album/Album.svelte'
+import Login from './components/Authentication/Login.svelte';
+import Signup from './components/Authentication/Signup.svelte';
+import VerifyUser from './components/Authentication/VerifyUser.svelte';
 
 export interface Route {
     path: string,

@@ -1,11 +1,12 @@
 <script lang="ts">
-    import { Authentication } from './authentication';
-    let auth = Authentication.Instance;
-    let authData = {
+    import { Authentication } from '../../services';
+
+    const auth = Authentication.Instance;
+    const authData = {
         email: "",
         password: "",
     };
-    let onLogin = () => {
+    const onLogin = () => {
         auth.loginUser(authData.email,authData.password);
     };
 </script>

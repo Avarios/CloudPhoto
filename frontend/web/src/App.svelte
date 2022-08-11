@@ -13,7 +13,7 @@
    });
    router.start();
 
-   import AppBar from "./AppBar/AppBar.svelte";
+   import { AppBar } from "./components";
    import type { SvelteComponent } from "svelte/types/runtime/internal/Component";
 </script>
 

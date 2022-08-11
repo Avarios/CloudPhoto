@@ -1,9 +1,8 @@
 <script lang="ts">
+import type { CloudPhotoUser } from "src/models";
+
     import { onMount } from "svelte";
-    import {
-        Authentication,
-        type CloudPhotoUser,
-    } from "../Authentication/authentication";
+    import { Authentication } from '../../services'
     import UserMenu from "./UserMenu.svelte";
 
     const auth = Authentication.Instance;

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Authentication } from './authentication';
+    import { Authentication } from '../../services';
     let auth = Authentication.Instance;
     let authData = {
         email: "",

@@ -1,15 +1,8 @@
-import { AuthenticationDetails, CognitoUser, CognitoUserAttribute, CognitoUserPool, CognitoUserSession, CookieStorage, type ISignUpResult } from 'amazon-cognito-identity-js';
-import { Observable } from '../Observable';
+import { AuthenticationDetails, CognitoUser, CognitoUserAttribute, CognitoUserPool, CognitoUserSession, type ISignUpResult } from 'amazon-cognito-identity-js';
 import { COGNITO_CLIENTID, COGNITO_USERPOOLID } from '../configuration';
+import { type CloudPhotoUser,Observable } from '../models';
 
 const STORAGE_USER_KEY = 'user';
-
-export interface CloudPhotoUser {
-    email: string,
-    firstName: string,
-    lastname: string,
-    username: string;
-}
 
 export class Authentication {
     private static instance: Authentication;
@@ -17,7 +10,6 @@ export class Authentication {
     private localStorage: Storage = window.localStorage;
     private userPool: CognitoUserPool;
     private user: Observable<CloudPhotoUser>
-
 
     private constructor() {
         this.userPool = new CognitoUserPool({
