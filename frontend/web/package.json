@@ -9,6 +9,9 @@
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
+  "dependencies": {
+    "page":"1.11.6"
+  },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.1",
     "@tsconfig/svelte": "^3.0.0",
