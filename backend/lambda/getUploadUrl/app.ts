@@ -1,16 +1,15 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
-import { DynamoDBClient, PutItemCommand } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb"
+import { ExecuteStatementCommand, RDSDataClient } from '@aws-sdk/client-rds-data';
 
 interface GetUploadUrlResponse {
     urls: { fileName: string, uploadUrl: string }[]
 }
 
-interface GetUploadUrlRequest{
-    files:string[],
-    album:string
+interface GetUploadUrlRequest {
+    files: string[],
+    album: string
 }
 
 /**
@@ -23,12 +22,15 @@ interface GetUploadUrlRequest{
  *
  */
 
+const DATABASE_NAME = 'CloudPhoto';
+const FILETABLE_NAME = 'Files';
+const AURORA_SECRET_ARN = process.env.AURORA_SECRET_ARN || "SECRETARN";
+const AURORA_CLUSTER_ARN = process.env.AURORA_CLUSTER_ARN || "CLUSTER";
+
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    let userSub = event.requestContext.authorizer?.jwt.claims.sub;
-    let userMail = event.requestContext.authorizer?.jwt.claims.email;
-    let s3Client = new S3Client({});
-    let ddbDocumentCLient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
-    let tableName = process.env.TABLE_NAME || "data";
+    const userSub = event.requestContext.authorizer?.jwt.claims.sub;
+    const userMail = event.requestContext.authorizer?.jwt.claims.email;
+    const s3Client = new S3Client({});
 
     if (userSub == null) {
         return {
@@ -44,23 +46,23 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         }
     };
 
-    let body:GetUploadUrlRequest
+    let body: GetUploadUrlRequest
     try {
         body = JSON.parse(event.body);
     } catch (error) {
         console.error(`Error while parsing body: ${event.body} with error: ${error}`)
         return {
             body: JSON.stringify(error),
-            statusCode:500
+            statusCode: 500
         }
     }
-     
+
     let files: string[] = [...body.files];
     let getUploadUrlResonse: GetUploadUrlResponse = { urls: [] };
     for (let file of files) {
         let signedUrl = await await getSignedUrl(s3Client, new GetObjectCommand({ Bucket: userSub, Key: file }), { expiresIn: 12600 });
         try {
-            saveSignedUrlRequest(ddbDocumentCLient,tableName,signedUrl, file, userSub,body.album,userMail);
+            saveSignedUrlRequest(signedUrl, file, userSub, body.album, userMail);
         } catch (error) {
             console.error(error);
             return {
@@ -68,7 +70,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
                 statusCode: 500
             }
         }
-        getUploadUrlResonse.urls.push({fileName:file,uploadUrl:signedUrl});
+        getUploadUrlResonse.urls.push({ fileName: file, uploadUrl: signedUrl });
     }
 
     return {
@@ -77,16 +79,20 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     }
 };
 
-const saveSignedUrlRequest = async (dbClient:DynamoDBDocumentClient,
-    tableName:string, signedUrl: string, fileKey: string, sub: string,album:string,email:string) => {
-    await dbClient.send(new PutCommand({
-        TableName:tableName,
-        Item: {
-            PK: `FILE#${fileKey}_${sub}`,
-            SK: `FILE#${fileKey}_${sub}`,
-            GSI1PK:`USER#${email}ALBUM#${album}`,
-            GSI1SK:`FILE#${fileKey}_${sub}`,
-            uploadUrl:signedUrl
-        }
-    }));
+const saveSignedUrlRequest = async (signedUrl: string, fileKey: string, sub: string, album: string, email: string) => {
+    /*  TODO:
+    const executePut = new ExecuteStatementCommand(
+        {
+            resourceArn: AURORA_CLUSTER_ARN,
+            secretArn: AURORA_SECRET_ARN,
+            database: DATABASE_NAME,
+            sql: 'select * from bla'
+        });
+    const client = new RDSDataClient({ logger: console });
+    try {
+        const result = await client.send(executePut);
+    } catch (error) {
+        console.error(JSON.stringify(error));
+    }
+    */
 }
