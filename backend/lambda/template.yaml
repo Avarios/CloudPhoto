@@ -24,9 +24,9 @@ Resources:
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
       BuildProperties:
-        Minify: true
+        Minify: false
         Target: "es2020"
-        Sourcemap: true
+        Sourcemap: false
         EntryPoints: 
         - app.ts
 
