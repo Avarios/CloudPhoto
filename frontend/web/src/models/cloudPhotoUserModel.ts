@@ -1,6 +1,6 @@
 export interface CloudPhotoUser {
-    email: string,
-    firstName: string,
-    lastname: string,
-    username: string;
+    email: string | null,
+    firstName: string | null,
+    lastname: string | null,
+    username: string | null;
 }

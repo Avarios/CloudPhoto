@@ -6,10 +6,10 @@ const STORAGE_USER_KEY = 'user';
 
 export class Authentication {
     private static instance: Authentication;
-    private cognitoUser: CognitoUser;
+    private cognitoUser: CognitoUser | null;
     private localStorage: Storage = window.localStorage;
     private userPool: CognitoUserPool;
-    private user: Observable<CloudPhotoUser>
+    private user: Observable<CloudPhotoUser> | null
 
     private constructor() {
         this.userPool = new CognitoUserPool({
@@ -25,16 +25,16 @@ export class Authentication {
                 this.user.value = JSON.parse(storedUser);
                 this.cognitoUser = new CognitoUser({
                     Pool: this.userPool,
-                    Username: this.user.value.username
+                    Username: this.user?.value?.username || ""
                 });
-                this.cognitoUser.getSession((err, sess: CognitoUserSession) => {
+                this.cognitoUser.getSession((err: any, sess: CognitoUserSession): void => {
                     if (err) {
-                        this.user.value = null;
+                        this.user = null;
                         this.cognitoUser = null;
 
                     } else {
                         if (!sess.isValid()) {
-                            this.user.value = null;
+                            this.user = null;
                             this.localStorage.removeItem(STORAGE_USER_KEY)
                         } else {
 
@@ -44,7 +44,7 @@ export class Authentication {
             }
         } else {
             this.user.value = undefined;
-            this.cognitoUser = undefined;
+            this.cognitoUser = null;
         }
 
     }
@@ -71,18 +71,16 @@ export class Authentication {
                 Value: familyName
             })
         ];
-        this.userPool.signUp(email, password, attributeList, null, (err: Error, result: ISignUpResult) => {
+        this.userPool.signUp(email, password, attributeList, [], (err: Error | undefined, result: ISignUpResult | undefined) => {
             if (err) {
                 console.log(err.message);
                 // SHow error message
                 return;
             }
-            if (!result.user) {
+            if (!result?.user) {
                 // Show error message
                 return;
             }
-
-            // Redirect to verify 
         })
     }
 
@@ -145,15 +143,15 @@ export class Authentication {
 
     private fetchUserAttributes = async (): Promise<CloudPhotoUser> => {
         return new Promise((resolve, reject) => {
-            this.cognitoUser.getUserAttributes((err, attributes) => {
+            this.cognitoUser?.getUserAttributes((err, attributes) => {
                 if (err) {
                     reject(err);
                 }
                 const user: CloudPhotoUser = {
-                    email: attributes.find(x => x.Name == 'email').Value,
-                    firstName: attributes.find(x => x.Name == 'given_name').Value,
-                    lastname: attributes.find(x => x.Name == 'family_name').Value,
-                    username: attributes.find(x => x.Name == 'sub').Value
+                    email: attributes?.find(x => x.Name == 'email')?.Value || null,
+                    firstName: attributes?.find(x => x.Name == 'given_name')?.Value || null,
+                    lastname: attributes?.find(x => x.Name == 'family_name')?.Value || null,
+                    username: attributes?.find(x => x.Name == 'sub')?.Value || null
                 }
 
                 resolve(user);
@@ -171,6 +169,6 @@ export class Authentication {
     }
 
     get userInformation(): CloudPhotoUser {
-        return this.user.value;
+        return this.user?.value;
     }
 }
