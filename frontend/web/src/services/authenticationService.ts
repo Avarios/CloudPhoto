@@ -1,19 +1,19 @@
 import { AuthenticationDetails, CognitoUser, CognitoUserAttribute, CognitoUserPool, CognitoUserSession, type ISignUpResult } from 'amazon-cognito-identity-js';
 import { COGNITO_CLIENTID, COGNITO_USERPOOLID } from '../configuration';
-
+export const ssr = false;
 const STORAGE_USER_KEY = 'user';
 
 export class Authentication {
     private static instance: Authentication;
     private cognitoUser: CognitoUser | null | undefined;
-    private localStorage: Storage = window.localStorage;
+    private cookieStore: Storage = window.localStorage
     private userPool: CognitoUserPool;
 
-    private constructor() {
+    constructor() {
         this.userPool = new CognitoUserPool({
             ClientId: COGNITO_CLIENTID,
             UserPoolId: COGNITO_USERPOOLID,
-            Storage: this.localStorage
+            Storage: this.cookieStore
         });
     }
 

@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 /** @type {import('./$types').PageLoad} */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function load({ params }) {
+export function load({ params }:any) {
     return {
       content: `Album id: ${params.id}`
     };
