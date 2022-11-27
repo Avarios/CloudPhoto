@@ -1,20 +1,19 @@
 import { AuthenticationDetails, CognitoUser, CognitoUserAttribute, CognitoUserPool, CognitoUserSession, type ISignUpResult } from 'amazon-cognito-identity-js';
-import { COGNITO_CLIENTID, COGNITO_USERPOOLID } from '../configuration';
-export const ssr = false;
-const STORAGE_USER_KEY = 'user';
+import type { writable } from "svelte/store";
 
 export class Authentication {
-    private static instance: Authentication;
     private cognitoUser: CognitoUser | null | undefined;
-    private cookieStore: Storage = window.localStorage
     private userPool: CognitoUserPool;
+    private userStore : typeof writable;
 
-    constructor() {
+
+    constructor(cognitoClientId:string, userpoolId:string, user: typeof writable) {
         this.userPool = new CognitoUserPool({
-            ClientId: COGNITO_CLIENTID,
-            UserPoolId: COGNITO_USERPOOLID,
-            Storage: this.cookieStore
+            ClientId: cognitoClientId,
+            UserPoolId: userpoolId,
+            Storage: undefined
         });
+        this.userStore = user;
     }
 
     registerUser = async (email: string, givenName: string, familyName: string, password: string) => {
@@ -73,6 +72,7 @@ export class Authentication {
                 }
             },
         });
+        this.userStore(user)
     }
 
 
