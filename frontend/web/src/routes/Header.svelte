@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { CloudPhotoUser } from "./../models";
-	import { user } from "../store";
+	import { user } from "../lib/store/store";
 	import logo from "$lib/images/picture.png";
 
 	let currentUser: CloudPhotoUser;
