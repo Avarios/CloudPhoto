@@ -1,100 +1,84 @@
-import { AuthenticationDetails, CognitoUser, CognitoUserAttribute, CognitoUserPool, CognitoUserSession, type ISignUpResult } from 'amazon-cognito-identity-js';
-import type { writable } from "svelte/store";
+import { redirect } from "@sveltejs/kit";
 
 export class Authentication {
-    private cognitoUser: CognitoUser | null | undefined;
-    private userPool: CognitoUserPool;
-    private userStore : typeof writable;
+    private clientId = '7tlnoq7vu7vgct6vqvg5hksod0';
 
+    /* registerUser = (email: string, givenName: string,
+          familyName: string, password: string,onSuccess: () => void,onFailure: (err:string) => string) => {
+         const attributeList: CognitoUserAttribute[] = [
+             new CognitoUserAttribute({
+                 Name: 'email',
+                 Value: email
+             }),
+             new CognitoUserAttribute({
+                 Name: 'given_name',
+                 Value: givenName
+             }),
+             new CognitoUserAttribute({
+                 Name: 'family_name',
+                 Value: familyName
+             })
+         ];
+         this.userPool.signUp(email, password, attributeList, [], (err: Error | undefined, result: ISignUpResult | undefined) => {
+             if (err) {
+                 onFailure(err.message);
+             }
+             if (!result?.user) {
+                 onFailure('GENERAL_ERROR')
+             }
+             onSuccess();
+         })
+     } */
 
-    constructor(cognitoClientId:string, userpoolId:string, user: typeof writable) {
-        this.userPool = new CognitoUserPool({
-            ClientId: cognitoClientId,
-            UserPoolId: userpoolId,
-            Storage: undefined
+    /* loginUser = (email: string, password: string, onSuccess: (user:CognitoUser) => CognitoUser, onFailure: (errCode:string) => string) => {
+         const user = new CognitoUser({ Pool: this.userPool, Username: email });
+         const authenticationDetails = new AuthenticationDetails({ Username: email, Password: password });
+ 
+         user.authenticateUser(authenticationDetails, {
+             onSuccess: async (result: CognitoUserSession) => {
+                 if (result.isValid()) {
+                     onSuccess(user);
+                 } else {
+                     onFailure('INVALID_CREDENTIALS');
+                 }
+ 
+             },
+ 
+             onFailure: (err) => {
+                 onFailure(err);
+             },
+         });
+         this.userStore(user)
+     }
+ 
+ 
+     verifyUser = (email: string, code: string) => {
+         const user = new CognitoUser({ Pool: this.userPool, Username: email });
+         user.confirmRegistration(code, false, (err, result) => {
+             if (err) {
+                 console.log(err.message, JSON.stringify(err));
+                 //TODO: ERROR HANDLING
+             }
+             if (result == 'SUCCESS') {
+                 //TODO: SUCCESS
+             }
+         });
+         this.cognitoUser = this.userPool.getCurrentUser();
+     } */
+
+    loginFederated =  async (provider: string) => {
+        console.log(provider);
+        const url = `https://scarecrow2.auth.eu-west-1.amazoncognito.com/oauth2/authorize?` +
+        `response_type=code&client_id=${this.clientId}&redirect_uri=http://localhost:5173/login/callback&` +
+        `scope=openid+profile&identity_provider=${provider}`;
+        console.log(url)
+        const result = await fetch(url, {
+            mode:'no-cors'
         });
-        this.userStore = user;
-    }
-
-    registerUser = async (email: string, givenName: string, familyName: string, password: string) => {
-        const attributeList: CognitoUserAttribute[] = [
-            new CognitoUserAttribute({
-                Name: 'email',
-                Value: email
-            }),
-            new CognitoUserAttribute({
-                Name: 'given_name',
-                Value: givenName
-            }),
-            new CognitoUserAttribute({
-                Name: 'family_name',
-                Value: familyName
-            })
-        ];
-        this.userPool.signUp(email, password, attributeList, [], (err: Error | undefined, result: ISignUpResult | undefined) => {
-            if (err) {
-                console.log(err.message);
-                // SHow error message
-                return;
-            }
-            if (!result?.user) {
-                // Show error message
-                return;
-            }
-        })
-    }
-
-    loginUser = (email: string, password: string) => {
-        const user = new CognitoUser({ Pool: this.userPool, Username: email });
-        const authenticationDetails = new AuthenticationDetails({ Username: email, Password: password });
-        user.authenticateUser(authenticationDetails, {
-            onSuccess: async (result: CognitoUserSession) => {
-                if (result.isValid()) {
-                    this.cognitoUser = user;
-                } else {
-                    //TODO: Error Handling
-                }
-
-            },
-
-            onFailure: (err) => {
-                //TODO: Error Handling
-                if (err.code == 'UserNotConfirmedException') {
-                    // Not confirmed
-                } else if (err.code == 'PasswordResetRequiredException') {
-                    // Reset Password Required
-                } else if (err.code == 'NotAuthorizedException') {
-                    // Not Authorised (Incorrect Password)
-                } else if (err.code == 'ResourceNotFoundException') {
-                    // User Not found
-                } else {
-                    // Unknown
-                }
-            },
-        });
-        this.userStore(user)
-    }
-
-
-    verifyUser = (email: string, code: string) => {
-        const user = new CognitoUser({ Pool: this.userPool, Username: email });
-        user.confirmRegistration(code, false, (err, result) => {
-            if (err) {
-                console.log(err.message, JSON.stringify(err));
-                //TODO: ERROR HANDLING
-            }
-            if (result == 'SUCCESS') {
-                //TODO: SUCCESS
-            }
-        });
-        this.cognitoUser = this.userPool.getCurrentUser();
-    }
-
-    logout = () => {
-
-    }
-
-    get isAuthenticated(): boolean {
-        return !!this.cognitoUser;
+        console.log(result);
+        const location = result.headers.get('Location');
+        if(location) {
+            redirect(302, location)
+        }
     }
 }

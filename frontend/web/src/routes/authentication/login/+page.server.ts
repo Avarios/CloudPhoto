@@ -1,7 +1,32 @@
-export const ssr = true;
-import { PRIVATE_COGNITO_CLIENTID, PRIVATE_COGNITO_USERPOOLID } from '$lib/server/configuration'
-import { Authentication } from '$lib/services';
-import { user } from '$lib/store';
+/** @type {import('./$types').PageLoad} */
+export async function load({ url, fetch }) {
+    const code = url.searchParams.get('code');
+    console.log(code);
+    const tokenUrl = `https://scarecrow2.auth.eu-west-1.amazoncognito.com/oauth2/token?code=${code}&grant_type=authorization_code&redirect_uri=http://localhost:5173/login/callback`;
+    const userInfoUrl = `https://scarecrow2.auth.eu-west-1.amazoncognito.com/oauth2/userInfo`;
+    console.log(tokenUrl)
+    const tokenResult = await fetch(tokenUrl, {
+			'headers': {
+                'Content-Type': 'application/x-www-form-urlencoded',
+				'Authorization':
+				'Basic N3Rsbm9xN3Z1N3ZnY3Q2dnF2ZzVoa3NvZDA6Nzc0a2JsMnJrNmJxYjZiY2lnZnIwdjMzaWptY2RuaWhrdmN1cXVsaWE2ZjBudnNvMW1m',
+				
+			},
+			'method': 'POST'
+		});
+    const tokenData = await tokenResult.json();
+    const userInfoResult = await fetch(userInfoUrl, {
+        'headers': {
+            'Authorization':
+            `Bearer ${tokenData.access_token}`,
+            
+        },
+        'method': 'GET'
+    });
+    const userInfoData = await userInfoResult.json();
 
-console.log(PRIVATE_COGNITO_CLIENTID,PRIVATE_COGNITO_USERPOOLID);
-const auth = new Authentication(PRIVATE_COGNITO_CLIENTID,PRIVATE_COGNITO_USERPOOLID, user);
+    return {
+			authResult: userInfoData,
+			code: code
+		};
+  }
