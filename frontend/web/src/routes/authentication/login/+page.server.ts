@@ -9,7 +9,7 @@ export async function load({ url, fetch }) {
 			'headers': {
                 'Content-Type': 'application/x-www-form-urlencoded',
 				'Authorization':
-				'Basic N3Rsbm9xN3Z1N3ZnY3Q2dnF2ZzVoa3NvZDA6Nzc0a2JsMnJrNmJxYjZiY2lnZnIwdjMzaWptY2RuaWhrdmN1cXVsaWE2ZjBudnNvMW1m',
+				'Basic ',
 				
 			},
 			'method': 'POST'
