@@ -5,7 +5,7 @@
 </script>
 
 <button
-    on:click={onClick()}
+    on:click|preventDefault={onClick()}
     class={`${buttonSize} h-${buttonHeight} rounded-md border border-indigo-500 hover:bg-indigo-500 hover:text-white duration-100 ease-in-out text-indigo-500 p-0 flex flex-row justify-center items-center gap-1`}
     type="submit"
 >

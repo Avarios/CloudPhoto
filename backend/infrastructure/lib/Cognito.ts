@@ -1,13 +1,13 @@
 import { Construct } from 'constructs';
 import { CfnOutput, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { AccountRecovery, Mfa, UserPool, UserPoolClient,UserPoolDomain, UserPoolEmail, VerificationEmailStyle } from 'aws-cdk-lib/aws-cognito';
+import { AccountRecovery, Mfa, UserPool, UserPoolClient,UserPoolDomain, UserPoolEmail, UserPoolIdentityProvider, UserPoolIdentityProviderGoogle, VerificationEmailStyle } from 'aws-cdk-lib/aws-cognito';
 
 export class Cognito extends Construct {
     constructor(parent: Stack) {
         super(parent, 'CloudPhotoCognito');
 
 
-        let userPool = new UserPool(parent, 'CloudPhotoUserPool', {
+        const userPool = new UserPool(parent, 'CloudPhotoUserPool', {
             accountRecovery: AccountRecovery.EMAIL_ONLY,
             mfa: Mfa.OPTIONAL,
             passwordPolicy: {
@@ -49,17 +49,29 @@ export class Cognito extends Construct {
             },
             removalPolicy:RemovalPolicy.DESTROY
         });
-        let userPoolClient = new UserPoolClient(parent,'CloudPhotoUserPoolClient',{
+
+        const googleProvider = new UserPoolIdentityProviderGoogle(parent,'googleProvider', {
+            clientId:'11311442041-24bb1so41t7en3eo0etjofq2ibph7v6v.apps.googleusercontent.com',
+            clientSecret:'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',
+            userPool,
+            scopes: [
+                "openid","email", "name"
+            ]
+        });
+
+        googleProvider.applyRemovalPolicy(RemovalPolicy.DESTROY);
+
+        const userPoolClient = new UserPoolClient(parent,'CloudPhotoUserPoolClient',{
             userPool:userPool,
             authFlows: {userPassword:true, userSrp:true}  
         });
-        let userPoolDomain = new UserPoolDomain(parent,'CloudPhotoUserPoolDomain', {
+        const userPoolDomain = new UserPoolDomain(parent,'CloudPhotoUserPoolDomain', {
             userPool,
             cognitoDomain: {
                 domainPrefix:'cloudphoto'
             }
         });
-        let signInUrl = userPoolDomain.signInUrl(userPoolClient,{
+        const signInUrl = userPoolDomain.signInUrl(userPoolClient,{
             redirectUri:'http://localhost:5173'
         })
 
@@ -76,6 +88,11 @@ export class Cognito extends Construct {
         new CfnOutput(parent,'CloudPhotoClientUserPoolID',{
             value: userPool.userPoolId,
             description: 'The user pool id',
+        });
+
+        new CfnOutput(parent,'CloudPhotoCognitoUrl',{
+            value: userPoolDomain.domainName,
+            description: 'Domain Name Congito',
         });
         
     }

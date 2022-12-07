@@ -1,3 +1,5 @@
+import { user } from '$lib/store';
+
 /** @type {import('./$types').PageLoad} */
 export async function load({ url, fetch }) {
     const code = url.searchParams.get('code');
@@ -24,6 +26,8 @@ export async function load({ url, fetch }) {
         'method': 'GET'
     });
     const userInfoData = await userInfoResult.json();
+
+    user.set({ mail:userInfoData.email ,username: userInfoData.username })
 
     return {
 			authResult: userInfoData,

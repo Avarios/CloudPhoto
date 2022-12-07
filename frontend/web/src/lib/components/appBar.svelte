@@ -1,7 +1,7 @@
 <script lang="ts">
 
 	import logo from "$lib/images/picture.png";
-	import Button from './button.svelte';
+	import { ButtonLink, Button } from './';
 
 	let openUserMenu = false;
 	let currentUser = false;
@@ -82,12 +82,12 @@
 
 								{#if !currentUser}
 								<div class="ml-10 flex items-baseline space-x-4">
-									<Button buttonHeight="10" onClick={ () => console.log() }>
+									<ButtonLink buttonHeight="10" href="/login">
 										Login
-									</Button>
-									<Button buttonHeight="10" onClick={ () => console.log() }>
+									</ButtonLink>
+									<ButtonLink buttonHeight="10" href="/login/register">
 										Register
-									</Button>
+									</ButtonLink>
 								</div>
 								{/if}
 							</div>

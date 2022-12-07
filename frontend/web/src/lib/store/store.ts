@@ -1,4 +1,4 @@
 import { writable } from "svelte/store";
-import type { CloudPhotoUser } from '../../models'
+import type { User } from '$lib/models'
 
-export const user = writable<CloudPhotoUser>()
+export const user = writable<User>()
