@@ -1,5 +1,8 @@
-import SocialButton from './socialButton.svelte'
+import Button from './button.svelte';
+import Header from './header.svelte';
+
 
 export {
-    SocialButton
+    Header,
+    Button
 }

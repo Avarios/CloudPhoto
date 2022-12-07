@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Header from './Header.svelte'
+    import { Header } from '$lib/components'
 </script>
 
 <div class="min-h-full"> 

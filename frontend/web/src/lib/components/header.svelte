@@ -1,14 +1,11 @@
 <script lang="ts">
-	import type { CloudPhotoUser } from "./../models";
-	import { user } from "../lib/store/store";
+
 	import logo from "$lib/images/picture.png";
+	import Button from './button.svelte';
 
-	let currentUser: CloudPhotoUser;
 	let openUserMenu = false;
+	let currentUser = false;
 
-	user.subscribe((usr) => {
-		currentUser = usr;
-	});
 </script>
 
 <header>
@@ -22,17 +19,13 @@
 					<div class="hidden md:block">
 						<div class="ml-10 flex items-baseline space-x-4">
 							<!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-							<a
-								href="/"
-								class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-								aria-current="page">Home</a
-							>
+							<Button buttonHeight="10" onClick={ () => console.log() }>
+								Home
+							</Button>
 							{#if currentUser}
-							<a
-								href="/album"
-								class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-								aria-current="page">Your Albums</a
-							>
+							<Button buttonHeight="10" onClick={ () => console.log() }>
+								Your Albums
+							</Button>
 							{/if}
 						</div>
 					</div>
@@ -89,16 +82,12 @@
 
 								{#if !currentUser}
 								<div class="ml-10 flex items-baseline space-x-4">
-									<a
-										href="/authentication/login"
-										class="bg-amber-400 text-black px-3 py-2 rounded-md text-sm font-medium"
-										aria-current="page">Login</a
-									>
-									<a
-										href="/authentication/register"
-										class="bg-lime-300 text-black px-3 py-2 rounded-md text-sm font-medium"
-										aria-current="page">Register</a
-									>
+									<Button buttonHeight="10" onClick={ () => console.log() }>
+										Login
+									</Button>
+									<Button buttonHeight="10" onClick={ () => console.log() }>
+										Register
+									</Button>
 								</div>
 								{/if}
 							</div>
