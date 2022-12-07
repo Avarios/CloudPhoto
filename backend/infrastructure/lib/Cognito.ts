@@ -51,8 +51,8 @@ export class Cognito extends Construct {
         });
 
         const googleProvider = new UserPoolIdentityProviderGoogle(parent,'googleProvider', {
-            clientId:'11311442041-24bb1so41t7en3eo0etjofq2ibph7v6v.apps.googleusercontent.com',
-            clientSecret:'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',
+            clientId:'',
+            clientSecret:'',
             userPool,
             scopes: [
                 "openid","email", "name"
