@@ -1,13 +1,10 @@
 <script lang="ts">
-    import { AppBar } from '$lib/components'
+  import { AppBar } from "$lib/components";
 </script>
 
-<div class="min-h-full"> 
-     <AppBar/>
-    <main class="bg-white shadow">
-      <div class="mx-auto max-w-7xl py-6 px-4 sm:px-6 lg:px-8">
-        <slot />
-      </div>
-    </main>
-  </div>
-  
+<div>
+  <AppBar />
+  <main>
+    <slot />
+  </main>
+</div>
