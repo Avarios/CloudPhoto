@@ -2,9 +2,16 @@
 
 	import logo from "$lib/images/picture.png";
 	import { ButtonLink, Button } from './';
+	import { user } from '$lib/store';
 
 	let openUserMenu = false;
 	let currentUser = false;
+
+	user.subscribe(usr => {
+		currentUser = !!usr;
+	})
+
+
 
 </script>
 

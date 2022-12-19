@@ -1,12 +1,6 @@
 <script lang="ts">
   import { Button } from "$lib/components";
   import type { PageData } from "./$types";
-
-  export let data:PageData;
-  
-  const loginGoogle = () => {
-    data.loginGoogle();
-  };
 </script>
 
 <!-- Simple login form -->
@@ -117,7 +111,6 @@
         </div>
         <div class="w-full flex flex-col gap-2">
           <button
-            on:click={loginGoogle}
             class="bg-red-500 text-white w-full p-2 flex flex-row justify-center gap-2 items-center hover:bg-red-600 duration-100 ease-in-out"
           >
             <svg
