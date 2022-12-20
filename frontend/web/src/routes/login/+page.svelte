@@ -1,6 +1,12 @@
 <script lang="ts">
   import { Button } from "$lib/components";
-  import type { PageData } from "./$types";
+  import { Authentication } from '$lib/services'
+  import { user } from '$lib/store'
+
+  const auth = new Authentication();
+  user.set(auth.getCurrentUser());
+
+
 </script>
 
 <!-- Simple login form -->
@@ -110,7 +116,7 @@
           <div class="w-full bg-gray-200 mt-3" style="height: 1px" />
         </div>
         <div class="w-full flex flex-col gap-2">
-          <button
+          <button on:click={auth.loginGoogle}
             class="bg-red-500 text-white w-full p-2 flex flex-row justify-center gap-2 items-center hover:bg-red-600 duration-100 ease-in-out"
           >
             <svg
