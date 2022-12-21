@@ -1,6 +1,8 @@
 <script lang="ts">
   import { AppBar, DebugBar } from "$lib/components";
-  export let data;
+  import type { PageData } from './$types'
+
+  export let data: PageData;
 
 
 </script>
