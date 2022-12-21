@@ -3,8 +3,6 @@
   import type { PageData } from './$types'
 
   export let data: PageData;
-
-
 </script>
 
 <div>
@@ -13,7 +11,7 @@
     <slot />
 
     {#if data.debug}
-		<DebugBar />
-	{/if}
+		  <DebugBar />
+	  {/if}
   </main>
 </div>
