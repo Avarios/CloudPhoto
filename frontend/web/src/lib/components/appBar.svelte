@@ -176,6 +176,13 @@
 					</button>
 				</div>
 			</div>
+			
 		</div>
 	</nav>
 </header>
+
+<style>
+	#user-menu-button:hover {
+		transform: scale(1.5);
+	}
+</style>
