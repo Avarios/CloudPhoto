@@ -1,14 +1,15 @@
-import { Stack, Tags } from 'aws-cdk-lib';
+import { CfnParameter, Stack, Tags } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
-export interface InfrastructureProps {
-  // Define construct properties here
-}
-
 export class Infrastructure extends Stack {
 
-  constructor(scope: Construct, id: string, props: InfrastructureProps = {}) {
+  public GoogleClientId:string;
+  public GoogleClientSecret:string;
+  public CognitoDomain:string;
+  public CognitoSenderMail:string;
+
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     Tags.of(this).add('stack', this.stackName, {

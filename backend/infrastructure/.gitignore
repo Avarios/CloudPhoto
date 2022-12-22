@@ -6,3 +6,4 @@ package_lock.json
 # CDK asset staging directory
 .cdk.staging
 cdk.out
+setup.sh

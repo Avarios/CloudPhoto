@@ -1,11 +1,37 @@
 import { Construct } from 'constructs';
-import { CfnOutput, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { AccountRecovery, Mfa, UserPool, UserPoolClient,UserPoolDomain, UserPoolEmail, UserPoolIdentityProvider, UserPoolIdentityProviderGoogle, VerificationEmailStyle } from 'aws-cdk-lib/aws-cognito';
-
+import { CfnOutput, CfnParameter, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import {
+    AccountRecovery, Mfa, OAuthScope, ProviderAttribute, UserPool,
+    UserPoolClientIdentityProvider,
+    UserPoolEmail, UserPoolIdentityProviderGoogle, VerificationEmailStyle
+} from 'aws-cdk-lib/aws-cognito';
 export class Cognito extends Construct {
     constructor(parent: Stack) {
         super(parent, 'CloudPhotoCognito');
+        const googleClientId = new CfnParameter(parent, 'googleClientId', {
+            type: "String",
+            description: "Enter the Google Client Id for the Cognito Connection"
+        }).valueAsString;
 
+        const googleClientSecret = new CfnParameter(parent, 'googleClientSecret', {
+            type: "String",
+            description: "Enter the Google Client Secret for the Cognito Connection"
+        }).valueAsString;
+
+        const cognitoDomain = new CfnParameter(parent, 'cognitoDomain', {
+            type: "String",
+            description: "Domain Prefix for Cognito"
+        }).valueAsString;
+
+        const cognitoSenderMail = new CfnParameter(parent, 'cognitoSenderMail', {
+            type: "String",
+            description: "The Sendermail for Cognito for Password Reset etc."
+        }).valueAsString;
+
+        const redirectUri = new CfnParameter(parent, 'redirectUri', {
+            type: "String",
+            description: "Specify the URL to your callback in the webapp"
+        }).valueAsString;
 
         const userPool = new UserPool(parent, 'CloudPhotoUserPool', {
             accountRecovery: AccountRecovery.EMAIL_ONLY,
@@ -18,82 +44,87 @@ export class Cognito extends Construct {
                 requireUppercase: true,
                 tempPasswordValidity: Duration.days(1)
             },
-            email:UserPoolEmail.withCognito('admin@cloudphoto.com'),
+            email: UserPoolEmail.withCognito(cognitoSenderMail),
             selfSignUpEnabled: true,
             userVerification: {
-              emailSubject: 'Verify your email for CloudPhoto !',
-              emailBody: 'Thanks for signing up to CloudPhoto! Your verification code is {####}',
-              emailStyle: VerificationEmailStyle.CODE
+                emailSubject: 'Verify your email for CloudPhoto !',
+                emailBody: 'Thanks for signing up to CloudPhoto! Your verification code is {####}',
+                emailStyle: VerificationEmailStyle.CODE
             },
             signInAliases: {
-                email:true
+                email: true
             },
-            userPoolName:"CloudPhotoUserPool",
+            userPoolName: "CloudPhotoUserPool",
             standardAttributes: {
                 email: {
-                    mutable:false,
-                    required:true
-                },
-                givenName: {
-                    mutable:false,
-                    required:true
-                },
-                familyName: {
-                    mutable:true,
-                    required:true
+                    mutable: false,
+                    required: true
                 }
             },
             mfaSecondFactor: {
-                otp:true,
-                sms:false
+                otp: true,
+                sms: false
             },
-            removalPolicy:RemovalPolicy.DESTROY
+            removalPolicy: RemovalPolicy.DESTROY
         });
 
-        const googleProvider = new UserPoolIdentityProviderGoogle(parent,'googleProvider', {
-            clientId:'',
-            clientSecret:'',
+        const googleProvider = new UserPoolIdentityProviderGoogle(parent, 'googleProvider', {
+            clientId: googleClientId,
+            clientSecret: googleClientSecret,
             userPool,
             scopes: [
-                "openid","email", "name"
+                "openid", "email"
+            ],
+            attributeMapping: {
+                email: ProviderAttribute.GOOGLE_EMAIL,
+                givenName: ProviderAttribute.GOOGLE_NAME,
+                profilePicture: ProviderAttribute.GOOGLE_PICTURE
+            },
+        });
+        googleProvider.applyRemovalPolicy(RemovalPolicy.DESTROY);
+        userPool.identityProviders.push(googleProvider);
+
+        const appClient = userPool.addClient('webClientCloudPhoto', {
+            accessTokenValidity: Duration.days(1),
+            idTokenValidity: Duration.days(1),
+            generateSecret: false,
+            refreshTokenValidity: Duration.days(1),
+            oAuth: {
+                callbackUrls: [
+                    redirectUri
+                ],
+                flows: {
+                    authorizationCodeGrant: true
+                },
+                scopes: [OAuthScope.EMAIL, OAuthScope.OPENID, OAuthScope.PROFILE]
+            },
+            supportedIdentityProviders: [
+                UserPoolClientIdentityProvider.GOOGLE,
+                UserPoolClientIdentityProvider.COGNITO
             ]
         });
+        appClient.applyRemovalPolicy(RemovalPolicy.DESTROY);
+        appClient.node.addDependency(googleProvider);
 
-        googleProvider.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
-        const userPoolClient = new UserPoolClient(parent,'CloudPhotoUserPoolClient',{
-            userPool:userPool,
-            authFlows: {userPassword:true, userSrp:true}  
-        });
-        const userPoolDomain = new UserPoolDomain(parent,'CloudPhotoUserPoolDomain', {
-            userPool,
+        const userPoolDomain = userPool.addDomain('CloudPhotoUserPoolDomain', {
             cognitoDomain: {
-                domainPrefix:'cloudphoto'
+                domainPrefix: cognitoDomain
             }
         });
-        const signInUrl = userPoolDomain.signInUrl(userPoolClient,{
-            redirectUri:'http://localhost:5173'
-        })
 
-        new CfnOutput(parent,'CloudPhotoClientId',{
-            value: userPoolClient.userPoolClientId,
-            description: 'The client ID for the WebApp/MobileApp',
-        });
+        userPoolDomain.signInUrl(appClient, { redirectUri: redirectUri })
 
-        new CfnOutput(parent,'CloudPhotoClientSigninUrl',{
-            value: signInUrl,
-            description: 'The signinUrl for Cognmito',
-        });
-
-        new CfnOutput(parent,'CloudPhotoClientUserPoolID',{
+        new CfnOutput(parent, 'CloudPhotoClientUserPoolID', {
             value: userPool.userPoolId,
             description: 'The user pool id',
         });
 
-        new CfnOutput(parent,'CloudPhotoCognitoUrl',{
-            value: userPoolDomain.domainName,
+        new CfnOutput(parent, 'CloudPhotoCognitoUrl', {
+            value: `${userPoolDomain.domainName}.auth.${parent.region}.amazoncognito.com/oauth2/authorize?client_id=${appClient.userPoolClientId}&response_type=code&scope=email+openid+profile&redirect_uri=${redirectUri}`,
             description: 'Domain Name Congito',
         });
-        
+
+
     }
 }
