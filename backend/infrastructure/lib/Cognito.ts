@@ -57,7 +57,7 @@ export class Cognito extends Construct {
             userPoolName: "CloudPhotoUserPool",
             standardAttributes: {
                 email: {
-                    mutable: false,
+                    mutable: true,
                     required: true
                 }
             },
