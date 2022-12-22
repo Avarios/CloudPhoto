@@ -74,12 +74,14 @@ export class Cognito extends Construct {
             clientSecret: googleClientSecret,
             userPool,
             scopes: [
-                "openid", "email"
+                "openid", "email" , "profile"
             ],
             attributeMapping: {
                 email: ProviderAttribute.GOOGLE_EMAIL,
-                givenName: ProviderAttribute.GOOGLE_NAME,
-                profilePicture: ProviderAttribute.GOOGLE_PICTURE
+                givenName: ProviderAttribute.GOOGLE_GIVEN_NAME,
+                profilePicture: ProviderAttribute.GOOGLE_PICTURE,
+                familyName: ProviderAttribute.GOOGLE_FAMILY_NAME,
+                preferredUsername:ProviderAttribute.GOOGLE_NAME
             },
         });
         googleProvider.applyRemovalPolicy(RemovalPolicy.DESTROY);
