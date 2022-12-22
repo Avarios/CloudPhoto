@@ -1,10 +1,17 @@
 <script lang="ts">
-  import { AppBar } from "$lib/components";
+  import { AppBar, DebugBar } from "$lib/components";
+  import type { PageData } from './$types'
+
+  export let data: PageData;
 </script>
 
 <div>
-  <AppBar />
+  <AppBar CognitoClientId={data.CognitoClientId} CognitoOauth2Url={data.CognitoUrl}/>
   <main>
     <slot />
+
+    {#if data.debug}
+		  <DebugBar />
+	  {/if}
   </main>
 </div>

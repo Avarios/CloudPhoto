@@ -1,4 +1,5 @@
 export interface User {
     username:string,
-    mail:string
+    mail:string,
+    avatarUrl:string
 }

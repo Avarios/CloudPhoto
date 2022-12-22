@@ -9,8 +9,8 @@ import { Lambda } from '../lib/Lambda';
 
 
 const app = new App();
-const cloudPhotoInfrastrcuture = new Infrastructure(app,'CloudPhotoInfrastrcuture');
-const cogito = new Cognito(cloudPhotoInfrastrcuture);
+const infra = new Infrastructure(app, 'CloudPhotoInfrastrcuture');
+const cognito = new Cognito(infra);
 //const network = new Network(cloudPhotoInfrastrcuture,'CloudPhotoVpcConstuct');
 //const database = new Database(cloudPhotoInfrastrcuture,'CloudPhotoDatabaseConstrcut',network.DefaultVpc);
 //const lambda = new Lambda(cloudPhotoInfrastrcuture,'CloudPhotoLambdaConstruct',database.DatabaseCluster)

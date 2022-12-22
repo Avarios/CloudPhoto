@@ -1,15 +1,27 @@
 <script lang="ts">
-
 	import logo from "$lib/images/picture.png";
-	import { ButtonLink, Button } from './';
+	import { ButtonLink, Button } from ".";
+	import { user } from "$lib/store";
+	import type { User } from "$lib/models";
 
 	let openUserMenu = false;
-	let currentUser = false;
+	let currentUser: User | undefined = undefined;
 
+	export let CognitoClientId:string;
+	export let CognitoOauth2Url:string
+
+	user.subscribe((usr) => {
+		currentUser = usr;
+	});
+
+	const logout = () => {
+		user.set(undefined);
+		openUserMenu = false
+	}
 </script>
 
 <header>
-	<nav class="bg-gray-800">
+	<nav class="bg-gray-800 navbar">
 		<div class="px-4 sm:px-6 lg:px-8">
 			<div class="flex h-16 items-center justify-between">
 				<div class="flex items-center">
@@ -18,14 +30,13 @@
 					</div>
 					<div class="hidden md:block">
 						<div class="ml-10 flex items-baseline space-x-4">
-							<!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-							<Button buttonHeight="10" onClick={ () => console.log() }>
+							<ButtonLink buttonHeight="10" href="/">
 								Home
-							</Button>
+							</ButtonLink>
 							{#if currentUser}
-							<Button buttonHeight="10" onClick={ () => console.log() }>
-								Your Albums
-							</Button>
+								<ButtonLink buttonHeight="10" href="/album">
+									Your Albums
+								</ButtonLink>
 							{/if}
 						</div>
 					</div>
@@ -74,21 +85,23 @@
 										>
 										<img
 											class="h-8 w-8 rounded-full"
-											src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+											src={currentUser.avatarUrl}
 											alt=""
 										/>
 									</button>
 								{/if}
 
 								{#if !currentUser}
-								<div class="ml-10 flex items-baseline space-x-4">
-									<ButtonLink buttonHeight="10" href="/login">
-										Login
-									</ButtonLink>
-									<ButtonLink buttonHeight="10" href="/login/register">
-										Register
-									</ButtonLink>
-								</div>
+									<div
+										class="ml-10 flex items-baseline space-x-4"
+									>
+										<ButtonLink
+											buttonHeight="10"
+											href={`${CognitoOauth2Url}/authorize?client_id=${CognitoClientId}&response_type=code&scope=email+openid+profile&redirect_uri=http://localhost:5173/login/callback`}
+										>
+											Login/Register
+										</ButtonLink>
+									</div>
 								{/if}
 							</div>
 							{#if openUserMenu}
@@ -105,7 +118,7 @@
 										class="block px-4 py-2 text-sm text-gray-700"
 										role="menuitem"
 										tabindex="-1"
-										id="user-menu-item-0">Your Profile</a
+										id="user-menu-item-0">Profile of { currentUser?.username}</a
 									>
 
 									<a
@@ -116,7 +129,7 @@
 										id="user-menu-item-1">Settings</a
 									>
 
-									<a
+									<a on:click={logout}
 										href="/"
 										class="block px-4 py-2 text-sm text-gray-700"
 										role="menuitem"
@@ -150,7 +163,7 @@
 								stroke-linejoin="round"
 								d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
 							/>
-						</svg>			
+						</svg>
 						<svg
 							class="hidden h-6 w-6"
 							xmlns="http://www.w3.org/2000/svg"
@@ -172,3 +185,9 @@
 		</div>
 	</nav>
 </header>
+
+<style>
+	#user-menu-button:hover {
+		transform: scale(1.5);
+	}
+</style>
