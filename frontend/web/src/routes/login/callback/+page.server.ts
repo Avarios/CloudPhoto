@@ -1,7 +1,7 @@
 
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { COGNITO_CLIENTID, COGNITO_CLIENTSECRET, COGNITO_OAUTH2_URL } from '$lib/server/configuration'
+import { SECRET_COGNITO_CLIENTID, SECRET_COGNITO_CLIENTSECRET, SECRET_COGNITO_OAUTH2_URL } from '$env/static/private'
 import { user } from '$lib/store'
 
 export const load = (async ({ url, fetch }) => {
@@ -23,7 +23,7 @@ export const load = (async ({ url, fetch }) => {
 }) satisfies PageServerLoad;
 
 const getUserInformation = async (accessToken: string, fetch:Function) => {
-  const userInfoUrl = `${COGNITO_OAUTH2_URL}/userInfo`;
+  const userInfoUrl = `${SECRET_COGNITO_OAUTH2_URL}/userInfo`;
   const options = {
     method: 'GET',
     headers: {
@@ -51,11 +51,11 @@ const getUserInformation = async (accessToken: string, fetch:Function) => {
 }
 
 const getTokens = async (code: string, url: URL,fetch:Function) => {
-  const encodedCredentials = Buffer.from(`${COGNITO_CLIENTID}:${COGNITO_CLIENTSECRET}`).toString('base64');
-  const tokenUrl = `${COGNITO_OAUTH2_URL}/token`
+  const encodedCredentials = Buffer.from(`${SECRET_COGNITO_CLIENTID}:${SECRET_COGNITO_CLIENTSECRET}`).toString('base64');
+  const tokenUrl = `${SECRET_COGNITO_OAUTH2_URL}/token`
   const encodedParams = new URLSearchParams();
   encodedParams.set('grant_type', 'authorization_code');
-  encodedParams.set('client_id', COGNITO_CLIENTID);
+  encodedParams.set('client_id', SECRET_COGNITO_CLIENTID);
   encodedParams.set('code', code);
   encodedParams.set('redirect_uri', `${url.protocol}//${url.hostname}:${url.port}/login/callback`);
 

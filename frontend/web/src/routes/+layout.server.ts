@@ -1,10 +1,10 @@
 import type { LayoutServerLoad } from './$types';
-import { COGNITO_CLIENTID, COGNITO_OAUTH2_URL } from '$lib/server/configuration'
+import { SECRET_COGNITO_CLIENTID,  SECRET_COGNITO_OAUTH2_URL } from '$env/static/private'
 
 export const load: LayoutServerLoad = async ({ locals }) => {
 	return {
 		debug: locals.debug,
-		CognitoClientId:COGNITO_CLIENTID,
-		CognitoUrl:COGNITO_OAUTH2_URL
+		CognitoClientId:SECRET_COGNITO_CLIENTID,
+		CognitoUrl:SECRET_COGNITO_OAUTH2_URL
 	};
 };
