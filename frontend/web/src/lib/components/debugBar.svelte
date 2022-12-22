@@ -4,7 +4,7 @@
     import { Button } from '$lib/components';
 
     let fakeUser:User = {
-        avatarUrl : "https://i.pravatar.cc/150",
+        avatarUrl : "https://avatars.dicebear.com/api/pixel-art/7324897982398.svg",
         mail: "user@user.de",
         username: "fake"
     };

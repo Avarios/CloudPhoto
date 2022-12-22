@@ -6,7 +6,7 @@
 </script>
 
 <div>
-  <AppBar />
+  <AppBar CognitoClientId={data.CognitoClientId} CognitoOauth2Url={data.CognitoUrl}/>
   <main>
     <slot />
 

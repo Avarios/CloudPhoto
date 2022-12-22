@@ -1,11 +1,14 @@
 <script lang="ts">
 	import logo from "$lib/images/picture.png";
-	import { ButtonLink, Button } from "./";
+	import { ButtonLink, Button } from ".";
 	import { user } from "$lib/store";
 	import type { User } from "$lib/models";
 
 	let openUserMenu = false;
 	let currentUser: User | undefined = undefined;
+
+	export let CognitoClientId:string;
+	export let CognitoOauth2Url:string
 
 	user.subscribe((usr) => {
 		currentUser = usr;
@@ -18,7 +21,7 @@
 </script>
 
 <header>
-	<nav class="bg-gray-800">
+	<nav class="bg-gray-800 navbar">
 		<div class="px-4 sm:px-6 lg:px-8">
 			<div class="flex h-16 items-center justify-between">
 				<div class="flex items-center">
@@ -27,7 +30,6 @@
 					</div>
 					<div class="hidden md:block">
 						<div class="ml-10 flex items-baseline space-x-4">
-							<!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
 							<ButtonLink buttonHeight="10" href="/">
 								Home
 							</ButtonLink>
@@ -95,15 +97,9 @@
 									>
 										<ButtonLink
 											buttonHeight="10"
-											href="/login"
+											href={`${CognitoOauth2Url}/authorize?client_id=${CognitoClientId}&response_type=code&scope=email+openid+profile&redirect_uri=http://localhost:5173/login/callback`}
 										>
-											Login
-										</ButtonLink>
-										<ButtonLink
-											buttonHeight="10"
-											href="/login/register"
-										>
-											Register
+											Login/Register
 										</ButtonLink>
 									</div>
 								{/if}
