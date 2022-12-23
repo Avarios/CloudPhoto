@@ -5,6 +5,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	return {
 		debug: locals.debug,
 		CognitoClientId:SECRET_COGNITO_CLIENTID,
-		CognitoUrl:SECRET_COGNITO_OAUTH2_URL
+		CognitoUrl:SECRET_COGNITO_OAUTH2_URL,
+		user:locals.user
 	};
 };

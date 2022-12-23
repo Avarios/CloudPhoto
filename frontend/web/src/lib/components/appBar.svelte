@@ -1,21 +1,16 @@
 <script lang="ts">
 	import logo from "$lib/images/picture.png";
-	import { ButtonLink, Button } from ".";
-	import { user } from "$lib/store";
+	import { ButtonLink} from ".";
 	import type { User } from "$lib/models";
 
 	let openUserMenu = false;
-	let currentUser: User | undefined = undefined;
 
 	export let CognitoClientId:string;
 	export let CognitoOauth2Url:string
+	export let User:User;
 
-	user.subscribe((usr) => {
-		currentUser = usr;
-	});
 
 	const logout = () => {
-		user.set(undefined);
 		openUserMenu = false
 	}
 </script>
@@ -33,7 +28,7 @@
 							<ButtonLink buttonHeight="10" href="/">
 								Home
 							</ButtonLink>
-							{#if currentUser}
+							{#if User}
 								<ButtonLink buttonHeight="10" href="/album">
 									Your Albums
 								</ButtonLink>
@@ -43,7 +38,7 @@
 				</div>
 				<div class="hidden md:block">
 					<div class="ml-4 flex items-center md:ml-6">
-						{#if currentUser}
+						{#if User}
 							<button
 								type="button"
 								class="rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -70,7 +65,7 @@
 						<!-- Profile dropdown -->
 						<div class="relative ml-3">
 							<div>
-								{#if currentUser}
+								{#if User}
 									<button
 										on:click={() =>
 											(openUserMenu = !openUserMenu)}
@@ -85,13 +80,13 @@
 										>
 										<img
 											class="h-8 w-8 rounded-full"
-											src={currentUser.avatarUrl}
+											src={User.avatarUrl}
 											alt=""
 										/>
 									</button>
 								{/if}
 
-								{#if !currentUser}
+								{#if !User}
 									<div
 										class="ml-10 flex items-baseline space-x-4"
 									>
@@ -118,7 +113,7 @@
 										class="block px-4 py-2 text-sm text-gray-700"
 										role="menuitem"
 										tabindex="-1"
-										id="user-menu-item-0">Profile of { currentUser?.username}</a
+										id="user-menu-item-0">Profile of { User?.username}</a
 									>
 
 									<a
