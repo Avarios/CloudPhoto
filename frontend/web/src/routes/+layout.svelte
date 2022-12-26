@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { AppBar} from "$lib/components";
+  import { AppBar,LoadingIndicator} from "$lib/components";
   import type { PageData } from './$types'
 
   export let data: PageData;
@@ -8,6 +8,8 @@
 <div>
   <AppBar CognitoClientId={data.CognitoClientId} CognitoOauth2Url={data.CognitoUrl} User={data.user}/>
   <main>
-    <slot />
+    <LoadingIndicator>
+      <slot />
+    </LoadingIndicator>
   </main>
 </div>

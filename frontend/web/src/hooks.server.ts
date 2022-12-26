@@ -1,9 +1,10 @@
 import { redirect, type Handle } from '@sveltejs/kit';
 import { SECRET_COGNITO_OAUTH2_URL } from '$env/static/private'
+import  { PUBLIC_COOKIENAME } from '$env/static/public'
 
 export const handle = (async ({ event, resolve }) => {
   const user = event.locals.user;
-  const userCookie = event.cookies.get('cloudphoto_token');
+  const userCookie = event.cookies.get(PUBLIC_COOKIENAME);
   console.log({
     user:user,
     userCookie:userCookie
@@ -16,6 +17,11 @@ export const handle = (async ({ event, resolve }) => {
       mail: userInfo.email,
       username: userInfo.preferred_username
     }
+  }
+
+  if(!userCookie) {
+    console.log('no User Cookie was set')
+    event.locals.user = undefined
   }
   
   return await resolve(event);

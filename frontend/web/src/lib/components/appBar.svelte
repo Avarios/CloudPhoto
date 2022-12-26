@@ -1,18 +1,23 @@
 <script lang="ts">
-	import logo from "$lib/images/picture.png";
-	import { ButtonLink} from ".";
+	import logo from "$lib/images/appicon.png";
+	import { ButtonLink } from ".";
 	import type { User } from "$lib/models";
+	import { invalidateAll } from '$app/navigation';
+	import { PUBLIC_LOCALAUTHENTICATION_CALLBACK_URL } from '$env/static/public'
+	export let CognitoClientId: string;
+	export let CognitoOauth2Url: string;
+	export let User: User|undefined;
 
-	let openUserMenu = false;
+	let isUserMenuOpen = false;
 
-	export let CognitoClientId:string;
-	export let CognitoOauth2Url:string
-	export let User:User;
+	const logout = async () => {
+		await invalidateAll()
+		isUserMenuOpen = false;
+	};
 
-
-	const logout = () => {
-		openUserMenu = false
-	}
+	const toggleMenu = () => {
+		isUserMenuOpen = !isUserMenuOpen;
+	};
 </script>
 
 <header>
@@ -25,12 +30,12 @@
 					</div>
 					<div class="hidden md:block">
 						<div class="ml-10 flex items-baseline space-x-4">
-							<ButtonLink buttonHeight="10" href="/">
-								Home
-							</ButtonLink>
 							{#if User}
-								<ButtonLink buttonHeight="10" href="/album">
-									Your Albums
+								<ButtonLink
+									buttonHeight="10"
+									href="/statistics"
+								>
+									Statistics
 								</ButtonLink>
 							{/if}
 						</div>
@@ -67,8 +72,7 @@
 							<div>
 								{#if User}
 									<button
-										on:click={() =>
-											(openUserMenu = !openUserMenu)}
+										on:click={toggleMenu}
 										type="button"
 										class="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
 										id="user-menu-button"
@@ -92,30 +96,31 @@
 									>
 										<ButtonLink
 											buttonHeight="10"
-											href={`${CognitoOauth2Url}/authorize?client_id=${CognitoClientId}&response_type=code&scope=email+openid+profile&redirect_uri=http://localhost:5173/login/callback`}
+											href={`${CognitoOauth2Url}/authorize?client_id=${CognitoClientId}&response_type=code&scope=email+openid+profile&redirect_uri=http://localhost:5173${PUBLIC_LOCALAUTHENTICATION_CALLBACK_URL}`}
 										>
 											Login/Register
 										</ButtonLink>
 									</div>
 								{/if}
 							</div>
-							{#if openUserMenu}
+							{#if isUserMenuOpen}
 								<div
-									on:mouseleave={() => (openUserMenu = false)}
+									on:mouseleave={toggleMenu}
 									class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
 									role="menu"
 									aria-orientation="vertical"
 									aria-labelledby="user-menu-button"
 									tabindex="-1"
 								>
-									<a
-										href="/"
+									<div
 										class="block px-4 py-2 text-sm text-gray-700"
 										role="menuitem"
 										tabindex="-1"
-										id="user-menu-item-0">Profile of { User?.username}</a
+										id="user-menu-item-0"
 									>
-
+										Hi {User?.username}
+									</div>
+									<hr />
 									<a
 										href="/"
 										class="block px-4 py-2 text-sm text-gray-700"
@@ -124,8 +129,9 @@
 										id="user-menu-item-1">Settings</a
 									>
 
-									<a on:click={logout}
-										href="/"
+									<a
+										on:click={logout}
+										href="/authentication/logout"
 										class="block px-4 py-2 text-sm text-gray-700"
 										role="menuitem"
 										tabindex="-1"
@@ -136,46 +142,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="-mr-2 flex md:hidden">
-					<button
-						type="button"
-						class="inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-						aria-controls="mobile-menu"
-						aria-expanded="false"
-					>
-						<span class="sr-only">Open main menu</span>
-						<svg
-							class="block h-6 w-6"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="1.5"
-							stroke="currentColor"
-							aria-hidden="true"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-							/>
-						</svg>
-						<svg
-							class="hidden h-6 w-6"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="1.5"
-							stroke="currentColor"
-							aria-hidden="true"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								d="M6 18L18 6M6 6l12 12"
-							/>
-						</svg>
-					</button>
-				</div>
+
 			</div>
 		</div>
 	</nav>
