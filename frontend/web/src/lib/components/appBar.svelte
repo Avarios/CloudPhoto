@@ -1,6 +1,6 @@
 <script lang="ts">
 	import logo from "$lib/images/appicon.png";
-	import { ButtonLink,ButtonSize } from ".";
+	import { ButtonLink, ButtonSize } from ".";
 	import type { User } from "$lib/models";
 	import { invalidateAll } from "$app/navigation";
 	import { PUBLIC_LOCALAUTHENTICATION_CALLBACK_URL } from "$env/static/public";
@@ -60,9 +60,11 @@
 					</div>
 				</div>
 				<div class="dropdown dropdown-end">
-					<button class="btn-scaling user-menu-button btn btn-ghost btn-circle avatar">
+					<button
+						class="btn-scaling user-menu-button btn btn-ghost btn-circle avatar"
+					>
 						<div class="w-10 rounded-full">
-							<img src={User.avatarUrl} alt="useravatar"/>
+							<img src={User.avatarUrl} alt="useravatar" />
 						</div>
 					</button>
 					<ul
@@ -72,16 +74,21 @@
 							<div class="justify-between">
 								Hi {User.username}
 							</div>
-							<br>
+							<br />
 						</li>
 						<li><a>Settings</a></li>
-						<li><a href="/authentication/logout" on:click={logout}>Logout</a></li>
+						<li>
+							<a href="/authentication/logout" on:click={logout}
+								>Logout</a
+							>
+						</li>
 					</ul>
 				</div>
 			{:else}
 				<ButtonLink
-					buttonSize={ButtonSize.Medium} 
-					href={`${CognitoOauth2Url}/authorize?client_id=${CognitoClientId}&response_type=code&scope=email+openid+profile&redirect_uri=http://localhost:5173${PUBLIC_LOCALAUTHENTICATION_CALLBACK_URL}`}>
+					buttonSize={ButtonSize.Medium}
+					href={`${CognitoOauth2Url}/authorize?client_id=${CognitoClientId}&response_type=code&scope=email+openid+profile&redirect_uri=http://localhost:5173${PUBLIC_LOCALAUTHENTICATION_CALLBACK_URL}`}
+				>
 					Login/Register
 				</ButtonLink>
 			{/if}
