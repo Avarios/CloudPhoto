@@ -3,11 +3,12 @@ package getuploadurl
 import (
 	"time"
 
+	"github.com/avarios/cloudphoto/domain"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-func GetUploadUrlForFile(event PreSignedUrlEvent) (PreSignedUrlResponse, error) {
+func GetUploadUrlForFile(event domain.PreSignedUrlEvent) (domain.PreSignedUrlResponse, error) {
 	sess := session.Must(session.NewSession())
 	svc := s3.New(sess)
 	req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
@@ -16,15 +17,15 @@ func GetUploadUrlForFile(event PreSignedUrlEvent) (PreSignedUrlResponse, error) 
 	})
 	urlStr, err := req.Presign(15 * time.Minute)
 	if err != nil {
-		return PreSignedUrlResponse{}, err
+		return domain.PreSignedUrlResponse{}, err
 	}
-	return PreSignedUrlResponse{Filename: event.Filename, Url: urlStr}, nil
+	return domain.PreSignedUrlResponse{Filename: event.Filename, Url: urlStr}, nil
 }
 
-func GetUploadUrlForFiles(events []PreSignedUrlEvent) ([]PreSignedUrlResponse, error) {
+func GetUploadUrlForFiles(events []domain.PreSignedUrlEvent) ([]domain.PreSignedUrlResponse, error) {
 	sess := session.Must(session.NewSession())
 	svc := s3.New(sess)
-	var uploadUrls []PreSignedUrlResponse
+	var uploadUrls []domain.PreSignedUrlResponse
 	for _, event := range events {
 		req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
 			Bucket: &event.Bucket,
@@ -35,7 +36,7 @@ func GetUploadUrlForFiles(events []PreSignedUrlEvent) ([]PreSignedUrlResponse, e
 		if err != nil {
 			return nil, err
 		}
-		uploadUrls = append(uploadUrls, PreSignedUrlResponse{Filename: event.Filename, Url: urlStr})
+		uploadUrls = append(uploadUrls, domain.PreSignedUrlResponse{Filename: event.Filename, Url: urlStr})
 	}
 
 	return uploadUrls, nil

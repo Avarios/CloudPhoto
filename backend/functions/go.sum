@@ -1,3 +1,5 @@
+github.com/Avarios/CloudPhoto v0.0.0-20221229211021-f4168834eba5 h1:V7EJ5eX9tpP0CVMiuKbw7dW+R/ydtN4SnzxegOb8EwU=
+github.com/Avarios/CloudPhoto v0.0.0-20221229211021-f4168834eba5/go.mod h1:+ASc3+hqbptwk/FdsvaSouDDTu++mnEsnU6CbQZ7uxA=
 github.com/aws/aws-lambda-go v1.36.1 h1:CJxGkL9uKszIASRDxzcOcLX6juzTLoTKtCIgUGcTjTU=
 github.com/aws/aws-lambda-go v1.36.1/go.mod h1:jwFe2KmMsHmffA1X2R09hH6lFzJQxzI8qK17ewzbQMM=
 github.com/aws/aws-sdk-go v1.44.168 h1:/NNDLkjcgW8UrvAUk7QvQS9yzo/CFu9Zp4BCiPHoV+E=
