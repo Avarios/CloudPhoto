@@ -1,0 +1,6 @@
+{
+    "Parameters": {
+        "BUCKET_NAME": "testBucket",
+        "STAGE": "dev"
+    }
+}

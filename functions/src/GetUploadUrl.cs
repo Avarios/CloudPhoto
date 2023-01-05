@@ -8,7 +8,7 @@ using Amazon.Lambda.APIGatewayEvents;
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
-namespace cloudphotobackend
+namespace Backend
 {
     public class GetUploadUrlEvent
     {
@@ -30,10 +30,23 @@ namespace cloudphotobackend
         IAmazonS3 s3Client;
         string applicationStorageName;
 
-        public GetUploadUrl(IAmazonS3? s3,string? bucketName)
+
+        /// <summary>
+        /// Constructor with Parameters for testing
+        /// </summary>
+        public GetUploadUrl(IAmazonS3 s3, string bucketName)
         {
             s3Client = s3 ?? new AmazonS3Client();
             applicationStorageName = Environment.GetEnvironmentVariable("BUCKET_NAME") ?? bucketName ?? string.Empty;
+        }
+
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
+        public GetUploadUrl()
+        {
+            s3Client = new AmazonS3Client();
+            applicationStorageName = Environment.GetEnvironmentVariable("BUCKET_NAME") ?? string.Empty;
         }
 
         /// <summary>
@@ -46,7 +59,7 @@ namespace cloudphotobackend
         {
             if (string.IsNullOrEmpty(applicationStorageName))
             {
-                return APIGateWayResponse.GetErrorResponse("Bucket not defined");
+                return APIGateWayResponse.GetErrorResponse("No Bucket defined");
             }
             GetUploadUrlEvent model;
             GetUploadUrlResponse result = new GetUploadUrlResponse();
@@ -56,21 +69,26 @@ namespace cloudphotobackend
             }
             catch (JsonException ex)
             {
-                return APIGateWayResponse.GetErrorResponse(ex.Message);
+                return APIGateWayResponse.GetErrorResponse(ex.ToString());
             }
 
             try
             {
                 model.FileNames.ForEach((file) =>
                 {
-                    var preSignedUrl = s3Client.GetPreSignedURL(new Amazon.S3.Model.GetPreSignedUrlRequest { BucketName = applicationStorageName, Key = file });
-                    result.UploadUrls.Add(file,preSignedUrl);
+                    var preSignedUrl = s3Client.GetPreSignedURL(new Amazon.S3.Model.GetPreSignedUrlRequest
+                    {
+                        BucketName = applicationStorageName,
+                        Key = file,
+                        Expires = new DateTime().AddHours(1)
+                    });
+                    result.UploadUrls.Add(file, preSignedUrl);
                 });
 
             }
             catch (Exception ex)
             {
-                return APIGateWayResponse.GetErrorResponse(ex.Message);
+                return APIGateWayResponse.GetErrorResponse(ex.ToString());
             }
 
             try
@@ -79,7 +97,7 @@ namespace cloudphotobackend
             }
             catch (JsonException ex)
             {
-                return APIGateWayResponse.GetErrorResponse(ex.Message);
+                return APIGateWayResponse.GetErrorResponse(ex.ToString());
             }
 
         }

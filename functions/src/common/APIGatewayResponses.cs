@@ -1,6 +1,8 @@
 using Amazon.Lambda.APIGatewayEvents;
+using System;
+using System.Text.Json;
 
-namespace cloudphotobackend
+namespace Backend
 {
     public static class APIGateWayResponse
     {
@@ -12,12 +14,11 @@ namespace cloudphotobackend
                 StatusCode = 200
             };
         }
-
         public static APIGatewayHttpApiV2ProxyResponse GetErrorResponse(string errorMessage)
         {
             return new APIGatewayHttpApiV2ProxyResponse()
             {
-                Body = errorMessage,
+                Body = JsonSerializer.Serialize(errorMessage),
                 StatusCode = 500
             };
         }

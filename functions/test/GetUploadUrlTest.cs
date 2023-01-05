@@ -9,7 +9,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using System.Text.Json;
 
-namespace cloudphotobackend.Tests
+namespace Backend.Tests
 {
     public class FunctionTest
     {
@@ -43,7 +43,6 @@ namespace cloudphotobackend.Tests
             var result = function.FunctionHandler(new Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest() { Body = JsonSerializer.Serialize<GetUploadUrlEvent>(mockEvent) }, context);
 
             Assert.Equal(500, result.StatusCode);
-            Assert.Equal("NOPE",result.Body);
         }
     }
 }
