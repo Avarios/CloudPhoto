@@ -29,8 +29,8 @@ Resources:
   GetUploadUrlFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./src
-      Handler: GetUploadUrl::Function.CloudPhoto::FunctionHandler
+      CodeUri: ./src/GetUploadUrl
+      Handler: Function::CloudPhoto.Function::FunctionHandler
       Runtime: dotnetcore3.1
       MemorySize: 256
       Timeout: 100
@@ -45,5 +45,5 @@ Resources:
         HttpPost:
            Type: Api
            Properties:
-             Path: '/api'
+             Path: '/api/getuploadurl'
              Method: post

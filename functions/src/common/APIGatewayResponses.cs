@@ -1,5 +1,4 @@
 using Amazon.Lambda.APIGatewayEvents;
-using System;
 using System.Text.Json;
 
 namespace Common
