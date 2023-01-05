@@ -1,34 +1,19 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "aws-sam",
-            "request": "direct-invoke",
-            "name": "API lambda:AutoScalingManagerFunction",
-            "invokeTarget": {
-                "target": "api",
-                "templatePath": "${workspaceFolder}/backend/functions/template.yaml",
-                "logicalId": "AutoScalingManagerFunction"
-            },
-            "api": {
-                "path": "/",
-                "httpMethod": "get",
-                "payload": {
-                    "json": {}
-                }
-            }
-        },
-        {
+            // Use IntelliSense to find out which attributes exist for C# debugging
+            // Use hover for the description of the existing attributes
+            // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
             "name": ".NET Core Launch (console)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}backend\\lambda\\src\\GetUploadUrlFunction\\bin\\Debug\\netcoreapp3.1\\GetUploadUrlFunction.dll",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceFolder}/test/test/GetUploadUrl.Test/bin/Debug/netcoreapp3.1/GetUploadUrl.Tests.dll",
             "args": [],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/test/test/GetUploadUrl.Test",
+            // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
             "stopAtEntry": false
         },

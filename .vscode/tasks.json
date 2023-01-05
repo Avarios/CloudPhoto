@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/backend/lambda/src/GetUploadUrlFunction/GetUploadUrlFunction.csproj",
+                "${workspaceFolder}/test/test/GetUploadUrl.Test/GetUploadUrl.Tests.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/backend/lambda/src/GetUploadUrlFunction/GetUploadUrlFunction.csproj",
+                "${workspaceFolder}/test/test/GetUploadUrl.Test/GetUploadUrl.Tests.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/backend/lambda/src/GetUploadUrlFunction/GetUploadUrlFunction.csproj"
+                "${workspaceFolder}/test/test/GetUploadUrl.Test/GetUploadUrl.Tests.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

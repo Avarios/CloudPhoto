@@ -30,7 +30,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./src
-      Handler: Backend::Backend.GetUploadUrl::FunctionHandler
+      Handler: GetUploadUrl::Function.CloudPhoto::FunctionHandler
       Runtime: dotnetcore3.1
       MemorySize: 256
       Timeout: 100

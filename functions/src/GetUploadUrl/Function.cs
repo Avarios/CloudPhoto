@@ -4,11 +4,12 @@ using System.Text.Json;
 using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.Lambda.APIGatewayEvents;
+using Common;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
-namespace Backend
+namespace CloudPhoto
 {
     public class GetUploadUrlEvent
     {
@@ -24,7 +25,7 @@ namespace Backend
         public Dictionary<string, string> UploadUrls { get; set; }
     }
 
-    public class GetUploadUrl
+    public class Function
     {
 
         IAmazonS3 s3Client;
@@ -34,7 +35,7 @@ namespace Backend
         /// <summary>
         /// Constructor with Parameters for testing
         /// </summary>
-        public GetUploadUrl(IAmazonS3 s3, string bucketName)
+        public Function(IAmazonS3 s3, string bucketName)
         {
             s3Client = s3 ?? new AmazonS3Client();
             applicationStorageName = Environment.GetEnvironmentVariable("BUCKET_NAME") ?? bucketName ?? string.Empty;
@@ -43,7 +44,7 @@ namespace Backend
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public GetUploadUrl()
+        public Function()
         {
             s3Client = new AmazonS3Client();
             applicationStorageName = Environment.GetEnvironmentVariable("BUCKET_NAME") ?? string.Empty;
@@ -55,7 +56,7 @@ namespace Backend
         /// <param name="input"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public APIGatewayHttpApiV2ProxyResponse FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
+        public APIGatewayProxyResponse FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
         {
             if (string.IsNullOrEmpty(applicationStorageName))
             {

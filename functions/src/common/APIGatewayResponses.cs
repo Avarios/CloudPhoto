@@ -2,21 +2,21 @@ using Amazon.Lambda.APIGatewayEvents;
 using System;
 using System.Text.Json;
 
-namespace Backend
+namespace Common
 {
     public static class APIGateWayResponse
     {
-        public static APIGatewayHttpApiV2ProxyResponse GetOkResonse(string body)
+        public static APIGatewayProxyResponse GetOkResonse(string body)
         {
-            return new APIGatewayHttpApiV2ProxyResponse()
+            return new APIGatewayProxyResponse()
             {
                 Body = body,
                 StatusCode = 200
             };
         }
-        public static APIGatewayHttpApiV2ProxyResponse GetErrorResponse(string errorMessage)
+        public static APIGatewayProxyResponse GetErrorResponse(string errorMessage)
         {
-            return new APIGatewayHttpApiV2ProxyResponse()
+            return new APIGatewayProxyResponse()
             {
                 Body = JsonSerializer.Serialize(errorMessage),
                 StatusCode = 500
