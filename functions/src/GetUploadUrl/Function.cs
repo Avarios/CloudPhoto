@@ -6,9 +6,8 @@ using Amazon.S3;
 using Amazon.Lambda.APIGatewayEvents;
 using CloudPhoto.Common;
 
-// Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
-[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
+[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 namespace CloudPhoto.Functions
 {
     public class GetUploadUrlEvent
@@ -25,9 +24,10 @@ namespace CloudPhoto.Functions
         public Dictionary<string, string> UploadUrls { get; set; }
     }
 
+    // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
+
     public class GetUploadUrlFunction
     {
-
         IAmazonS3 s3Client;
         string applicationStorageName;
 
