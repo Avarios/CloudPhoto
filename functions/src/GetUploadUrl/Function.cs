@@ -12,6 +12,7 @@ namespace CloudPhoto.Functions
 {
     public class GetUploadUrlEvent
     {
+        public string Folder { get; set; }
         public List<string> FileNames { get; set; }
     }
 
@@ -28,6 +29,7 @@ namespace CloudPhoto.Functions
 
     public class GetUploadUrlFunction
     {
+        const string HEADER_USERID_KEY = "Cloudphoto-Userid";
         IAmazonS3 s3Client;
         string applicationStorageName;
 
@@ -58,12 +60,21 @@ namespace CloudPhoto.Functions
         /// <returns></returns>
         public APIGatewayProxyResponse FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
         {
+            context.Logger.LogLine(String.Join(Environment.NewLine, request.Headers));
+            GetUploadUrlEvent model;
+            GetUploadUrlResponse result = new GetUploadUrlResponse();
+            string userId;
             if (string.IsNullOrEmpty(applicationStorageName))
             {
                 return APIGateWayResponse.GetErrorResponse("No Bucket defined");
             }
-            GetUploadUrlEvent model;
-            GetUploadUrlResponse result = new GetUploadUrlResponse();
+
+            if (!request.Headers.TryGetValue(HEADER_USERID_KEY, out userId))
+            {
+                return APIGateWayResponse.GetUnauthorizedResponse();
+            }
+
+
             try
             {
                 model = JsonSerializer.Deserialize<GetUploadUrlEvent>(request.Body);
@@ -73,13 +84,18 @@ namespace CloudPhoto.Functions
                 return APIGateWayResponse.GetErrorResponse(ex.ToString());
             }
 
+            if (string.IsNullOrEmpty(model.Folder))
+            {
+                return APIGateWayResponse.GetErrorResponse(new BackendErrorMessage { Message = "No Folder provided", Code = 100 });
+            }
+
             try
             {
                 model.FileNames.ForEach((file) =>
                 {
                     var preSignedUrl = s3Client.GetPreSignedURL(new Amazon.S3.Model.GetPreSignedUrlRequest
                     {
-                        BucketName = applicationStorageName,
+                        BucketName = $"{applicationStorageName}/{userId}/{model.Folder}",
                         Key = file,
                         Expires = new DateTime().AddHours(1)
                     });

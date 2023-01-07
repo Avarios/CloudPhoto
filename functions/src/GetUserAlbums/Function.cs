@@ -45,6 +45,8 @@ namespace CloudPhoto.Functions
             {
                 return APIGateWayResponse.GetErrorResponse("No Bucket defined");
             }
+
+            return APIGateWayResponse.GetOkResonse("");
         }
     }
 }
