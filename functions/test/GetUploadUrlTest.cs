@@ -21,7 +21,7 @@ namespace CloudPhoto.Test
             var s3Mock = new Mock<IAmazonS3>();
             s3Mock.Setup(x => x.GetPreSignedURL(It.IsAny<GetPreSignedUrlRequest>())).Returns("A");
             // Invoke the lambda function and confirm the string was upper cased.
-            var function = new Function(s3Mock.Object, "BUCKET");
+            var function = new GetUploadUrlFunction(s3Mock.Object, "BUCKET");
             var context = new TestLambdaContext();
             var mockEvent = new GetUploadUrlEvent() { FileNames = new List<string> { "A", "B", "C" } };
             var result = function.FunctionHandler(new APIGatewayProxyRequest() { Body = JsonSerializer.Serialize<GetUploadUrlEvent>(mockEvent) }, context);
@@ -38,7 +38,7 @@ namespace CloudPhoto.Test
             var s3Mock = new Mock<IAmazonS3>();
             s3Mock.Setup(x => x.GetPreSignedURL(It.IsAny<GetPreSignedUrlRequest>())).Throws(new AmazonS3Exception("NOPE"));
             // Invoke the lambda function and confirm the string was upper cased.
-            var function = new Function(s3Mock.Object, "BUCKET");
+            var function = new GetUploadUrlFunction(s3Mock.Object, "BUCKET");
             var context = new TestLambdaContext();
             var mockEvent = new GetUploadUrlEvent() { FileNames = new List<string> { "A", "B", "C" } };
             var result = function.FunctionHandler(new APIGatewayProxyRequest() { Body = JsonSerializer.Serialize<GetUploadUrlEvent>(mockEvent) }, context);

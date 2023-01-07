@@ -25,7 +25,7 @@ namespace CloudPhoto.Functions
         public Dictionary<string, string> UploadUrls { get; set; }
     }
 
-    public class Function
+    public class GetUploadUrlFunction
     {
 
         IAmazonS3 s3Client;
@@ -35,7 +35,7 @@ namespace CloudPhoto.Functions
         /// <summary>
         /// Constructor with Parameters for testing
         /// </summary>
-        public Function(IAmazonS3 s3, string bucketName)
+        public GetUploadUrlFunction(IAmazonS3 s3, string bucketName)
         {
             s3Client = s3 ?? new AmazonS3Client();
             applicationStorageName = Environment.GetEnvironmentVariable("BUCKET_NAME") ?? bucketName ?? string.Empty;
@@ -44,7 +44,7 @@ namespace CloudPhoto.Functions
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public Function()
+        public GetUploadUrlFunction()
         {
             s3Client = new AmazonS3Client();
             applicationStorageName = Environment.GetEnvironmentVariable("BUCKET_NAME") ?? string.Empty;
