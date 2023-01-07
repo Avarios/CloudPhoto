@@ -7,7 +7,7 @@ namespace CloudPhoto.Common
     public static class APIGateWayResponse
     {
 
-        private static Dictionary<string,string> Header = new Dictionary<string,string>{{"Content-Type","application/json"}};
+        private static Dictionary<string, string> Header = new Dictionary<string, string> { { "Content-Type", "application/json" } };
 
         public static APIGatewayProxyResponse GetOkResonse(string body)
         {
@@ -18,6 +18,16 @@ namespace CloudPhoto.Common
                 Headers = Header
             };
         }
+
+        public static APIGatewayProxyResponse GetOkResonse()
+        {
+            return new APIGatewayProxyResponse()
+            {
+                StatusCode = 200,
+                Headers = Header
+            };
+        }
+
         public static APIGatewayProxyResponse GetErrorResponse(string errorMessage)
         {
             return new APIGatewayProxyResponse()

@@ -47,3 +47,25 @@ Resources:
            Properties:
              Path: '/api/getuploadurl'
              Method: post
+  CreateFolderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src
+      Handler: Functions::CloudPhoto.Functions.CreateFolderFunction::FunctionHandler
+      Runtime: dotnetcore3.1
+      MemorySize: 128
+      Timeout: 100
+      Description: Lambda that creates a folder in the S3 Bucket
+      Policies:
+        # Give Lambda basic execution Permission to the helloFromLambda
+        - AWSLambdaBasicExecutionRole
+      Environment:
+        Variables:
+          BUCKET_NAME: TESTBUCKET
+          AWS_REGION: eu-central-1
+      Events:
+        HttpPost:
+           Type: Api
+           Properties:
+             Path: '/api/createfolder'
+             Method: post
