@@ -9,9 +9,9 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
-using CloudPhoto;
+using CloudPhoto.Functions;
 
-namespace Test
+namespace CloudPhoto.Test
 {
     public class FunctionTest
     {

@@ -4,12 +4,12 @@ using System.Text.Json;
 using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.Lambda.APIGatewayEvents;
-using Common;
+using CloudPhoto.Common;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
-[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
+[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
-namespace CloudPhoto
+namespace CloudPhoto.Functions
 {
     public class GetUploadUrlEvent
     {

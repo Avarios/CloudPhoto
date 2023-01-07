@@ -1,7 +1,7 @@
 using Amazon.Lambda.APIGatewayEvents;
 using System.Text.Json;
 
-namespace Common
+namespace CloudPhoto.Common
 {
     public static class APIGateWayResponse
     {
