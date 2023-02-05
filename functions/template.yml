@@ -47,6 +47,7 @@ Resources:
            Properties:
              Path: '/api/getuploadurl'
              Method: post
+             
   CreateFolderFunction:
     Type: AWS::Serverless::Function
     Properties:
