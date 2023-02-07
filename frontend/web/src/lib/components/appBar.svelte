@@ -72,7 +72,7 @@
 					>
 						<li>
 							<div class="justify-between">
-								Hi {User.username}
+								Hi {User.username || User.mail}
 							</div>
 							<br />
 						</li>
@@ -87,7 +87,7 @@
 			{:else}
 				<ButtonLink
 					buttonSize={ButtonSize.Medium}
-					href={`${CognitoOauth2Url}/authorize?client_id=${CognitoClientId}&response_type=code&scope=email+openid+profile&redirect_uri=http://localhost:5173${PUBLIC_LOCALAUTHENTICATION_CALLBACK_URL}`}
+					href={`${CognitoOauth2Url}/oauth2/authorize?client_id=${CognitoClientId}&response_type=code&scope=email+openid+profile&redirect_uri=http://localhost:5173${PUBLIC_LOCALAUTHENTICATION_CALLBACK_URL}`}
 				>
 					Login/Register
 				</ButtonLink>

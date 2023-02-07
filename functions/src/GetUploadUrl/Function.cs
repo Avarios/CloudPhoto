@@ -4,15 +4,15 @@ using System.Text.Json;
 using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.Lambda.APIGatewayEvents;
-using Common;
+using CloudPhoto.Common;
 
-// Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
-[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
-namespace CloudPhoto
+[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
+namespace CloudPhoto.Functions
 {
     public class GetUploadUrlEvent
     {
+        public string Folder { get; set; }
         public List<string> FileNames { get; set; }
     }
 
@@ -25,9 +25,11 @@ namespace CloudPhoto
         public Dictionary<string, string> UploadUrls { get; set; }
     }
 
-    public class Function
-    {
+    // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 
+    public class GetUploadUrlFunction
+    {
+        const string HEADER_USERID_KEY = "Cloudphoto-Userid";
         IAmazonS3 s3Client;
         string applicationStorageName;
 
@@ -35,7 +37,7 @@ namespace CloudPhoto
         /// <summary>
         /// Constructor with Parameters for testing
         /// </summary>
-        public Function(IAmazonS3 s3, string bucketName)
+        public GetUploadUrlFunction(IAmazonS3 s3, string bucketName)
         {
             s3Client = s3 ?? new AmazonS3Client();
             applicationStorageName = Environment.GetEnvironmentVariable("BUCKET_NAME") ?? bucketName ?? string.Empty;
@@ -44,7 +46,7 @@ namespace CloudPhoto
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public Function()
+        public GetUploadUrlFunction()
         {
             s3Client = new AmazonS3Client();
             applicationStorageName = Environment.GetEnvironmentVariable("BUCKET_NAME") ?? string.Empty;
@@ -58,12 +60,21 @@ namespace CloudPhoto
         /// <returns></returns>
         public APIGatewayProxyResponse FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
         {
+            context.Logger.LogLine(String.Join(Environment.NewLine, request.Headers));
+            GetUploadUrlEvent model;
+            GetUploadUrlResponse result = new GetUploadUrlResponse();
+            string userId;
             if (string.IsNullOrEmpty(applicationStorageName))
             {
                 return APIGateWayResponse.GetErrorResponse("No Bucket defined");
             }
-            GetUploadUrlEvent model;
-            GetUploadUrlResponse result = new GetUploadUrlResponse();
+
+            if (!request.Headers.TryGetValue(HEADER_USERID_KEY, out userId))
+            {
+                return APIGateWayResponse.GetUnauthorizedResponse();
+            }
+
+
             try
             {
                 model = JsonSerializer.Deserialize<GetUploadUrlEvent>(request.Body);
@@ -73,13 +84,18 @@ namespace CloudPhoto
                 return APIGateWayResponse.GetErrorResponse(ex.ToString());
             }
 
+            if (string.IsNullOrEmpty(model.Folder))
+            {
+                return APIGateWayResponse.GetErrorResponse(new BackendErrorMessage { Message = "No Folder provided", Code = 100 });
+            }
+
             try
             {
                 model.FileNames.ForEach((file) =>
                 {
                     var preSignedUrl = s3Client.GetPreSignedURL(new Amazon.S3.Model.GetPreSignedUrlRequest
                     {
-                        BucketName = applicationStorageName,
+                        BucketName = $"{applicationStorageName}/{userId}/{model.Folder}",
                         Key = file,
                         Expires = new DateTime().AddHours(1)
                     });

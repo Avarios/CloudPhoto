@@ -1,5 +1,5 @@
 import { redirect, type Handle } from '@sveltejs/kit';
-import { SECRET_COGNITO_OAUTH2_URL } from '$env/static/private'
+import { SECRET_COGNITO_URL } from '$env/static/private'
 import  { PUBLIC_COOKIENAME } from '$env/static/public'
 
 export const handle = (async ({ event, resolve }) => {
@@ -21,7 +21,6 @@ export const handle = (async ({ event, resolve }) => {
 
   if(!userCookie) {
     console.log('no User Cookie was set')
-    event.locals.user = undefined
   }
   
   return await resolve(event);
@@ -29,7 +28,7 @@ export const handle = (async ({ event, resolve }) => {
 
 
 const getUserInformation = async (accessToken: string) => {
-  const userInfoUrl = `${SECRET_COGNITO_OAUTH2_URL}/userInfo`;
+  const userInfoUrl = `${SECRET_COGNITO_URL}/oauth2/userInfo`;
   const options = {
     method: 'GET',
     headers: {

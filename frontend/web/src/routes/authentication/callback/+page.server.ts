@@ -1,7 +1,7 @@
 
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { SECRET_COGNITO_CLIENTID, SECRET_COGNITO_CLIENTSECRET, SECRET_COGNITO_OAUTH2_URL } from '$env/static/private'
+import { SECRET_COGNITO_CLIENTID, SECRET_COGNITO_CLIENTSECRET, SECRET_COGNITO_URL } from '$env/static/private'
 import { PUBLIC_COOKIENAME, PUBLIC_LOCALAUTHENTICATION_CALLBACK_URL, PUBLIC_COOKIE_EXPIRETIME } from '$env/static/public'
 
 export const load = (async ({ url, fetch, cookies }) => {
@@ -21,7 +21,7 @@ export const load = (async ({ url, fetch, cookies }) => {
 
 const getTokens = async (code: string, url: URL, fetch: Function) => {
   const encodedCredentials = Buffer.from(`${SECRET_COGNITO_CLIENTID}:${SECRET_COGNITO_CLIENTSECRET}`).toString('base64');
-  const tokenUrl = `${SECRET_COGNITO_OAUTH2_URL}/token`
+  const tokenUrl = `${SECRET_COGNITO_URL}/oauth2/token`
   const encodedParams = new URLSearchParams();
   encodedParams.set('grant_type', 'authorization_code');
   encodedParams.set('client_id', SECRET_COGNITO_CLIENTID);
