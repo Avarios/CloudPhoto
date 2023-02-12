@@ -74,14 +74,14 @@ export class Cognito extends Construct {
             clientSecret: googleClientSecret,
             userPool,
             scopes: [
-                "openid", "email" , "profile"
+                "openid", "email", "profile"
             ],
             attributeMapping: {
                 email: ProviderAttribute.GOOGLE_EMAIL,
                 givenName: ProviderAttribute.GOOGLE_GIVEN_NAME,
                 profilePicture: ProviderAttribute.GOOGLE_PICTURE,
                 familyName: ProviderAttribute.GOOGLE_FAMILY_NAME,
-                preferredUsername:ProviderAttribute.GOOGLE_NAME
+                preferredUsername: ProviderAttribute.GOOGLE_NAME
             },
         });
         googleProvider.applyRemovalPolicy(RemovalPolicy.DESTROY);
@@ -90,16 +90,18 @@ export class Cognito extends Construct {
         const appClient = userPool.addClient('webClientCloudPhoto', {
             accessTokenValidity: Duration.days(1),
             idTokenValidity: Duration.days(1),
-            generateSecret: true,
+            generateSecret: false,
             refreshTokenValidity: Duration.days(1),
             oAuth: {
                 callbackUrls: [
                     redirectUri
                 ],
+                logoutUrls: [
+                    redirectUri],
                 flows: {
                     authorizationCodeGrant: true
                 },
-                scopes: [OAuthScope.EMAIL, OAuthScope.OPENID, OAuthScope.PROFILE]
+                scopes: [OAuthScope.EMAIL, OAuthScope.OPENID, OAuthScope.PROFILE, OAuthScope.COGNITO_ADMIN]
             },
             supportedIdentityProviders: [
                 UserPoolClientIdentityProvider.GOOGLE,
@@ -117,6 +119,8 @@ export class Cognito extends Construct {
         });
 
         userPoolDomain.signInUrl(appClient, { redirectUri: redirectUri })
+        //We are using Amplify, and this framework does not support client secret.
+        /*
 
         // Create Custom Ressource just to get the ClientSecret.
         const describeCognitoUserPoolClient = new AwsCustomResource(
@@ -140,9 +144,17 @@ export class Cognito extends Construct {
             }
         )
 
+        })
+
+        
         const userPoolClientSecret = describeCognitoUserPoolClient.getResponseField(
             'UserPoolClient.ClientSecret'
-        )
+        ) 
+        
+        new CfnOutput(this, 'UserPoolClientSecret', {
+            value: userPoolClientSecret,
+        })
+        */
 
         new CfnOutput(parent, 'CloudPhotoClientUserPoolID', {
             value: userPool.userPoolId,
@@ -159,8 +171,6 @@ export class Cognito extends Construct {
             description: 'Domain Name Congito',
         });
 
-        new CfnOutput(this, 'UserPoolClientSecret', {
-            value: userPoolClientSecret,
-        }) 
+
     }
 }
