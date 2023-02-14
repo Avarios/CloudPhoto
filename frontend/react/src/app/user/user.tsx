@@ -1,15 +1,23 @@
 import { useState } from 'react';
-import { useUserState } from '../common/UserProvider';
+import { useAuthentication } from '../hooks';
+import { Button } from 'react-bootstrap';
+import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
 
 export function User() {
-  const { setState, state } = useUserState();
+  const { federatedSignIn, user, signOut, isAuthenticated } =
+    useAuthentication();
   const [username, setUserName] = useState('');
+
+  if (isAuthenticated) {
+    return <div>Hi {user?.username}</div>;
+  }
+
   return (
-    <div>
-      <div>This is an User from user {state.username} </div>
-      <input value={username} onChange={(e) => setUserName(e.target.value)} />
-      <button onClick={() => setState({ username: username })}>Save</button>
-    </div>
+    <Button
+      onClick={() => federatedSignIn(CognitoHostedUIIdentityProvider.Google)}
+    >
+      Google Login
+    </Button>
   );
 }
 

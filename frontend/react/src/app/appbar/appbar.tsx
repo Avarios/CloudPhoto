@@ -1,11 +1,7 @@
-import { useState } from 'react';
-import { useUserState } from '../common/UserProvider';
 import { Navbar, Container } from 'react-bootstrap';
 
 
 export function AppBar() {
-  const { setState, state } = useUserState();
-  const [username, setUserName] = useState('');
   return (
     <Navbar bg="dark" variant="dark">
     <Container>
