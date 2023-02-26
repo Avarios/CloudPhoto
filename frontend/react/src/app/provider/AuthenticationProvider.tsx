@@ -1,6 +1,7 @@
 import {
   useState,
   useEffect,
+  useMemo
 } from 'react';
 import { Amplify, Auth, Hub } from 'aws-amplify';
 import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
@@ -33,7 +34,6 @@ const AuthenticationProvider = ({ children }: IAuthenticationProviderProps) => {
         username: preferred_username,
       });
     } catch (error) {
-      console.error(error);
       setIsAuthenticated(false);
       setUser(null);
     }
@@ -48,7 +48,10 @@ const AuthenticationProvider = ({ children }: IAuthenticationProviderProps) => {
   };
 
   useEffect(() => {
-    getCurrentUser();
+    if(!user) {
+      getCurrentUser();
+    }
+    
 
     // listening for auth change events
     const authListener = Hub.listen(

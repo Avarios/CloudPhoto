@@ -9,7 +9,7 @@ export function User() {
   const [username, setUserName] = useState('');
 
   if (isAuthenticated) {
-    return <div>Hi {user?.username}</div>;
+    return <div>Hi {user?.username} <Button onClick={() => signOut()}> Logout </Button></div>;
   }
 
   return (
