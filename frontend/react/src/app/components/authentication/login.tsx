@@ -1,12 +1,10 @@
-import { useState } from 'react';
-import { useAuthentication } from '../hooks';
+import { useAuthentication } from '../../hooks';
 import { Button } from 'react-bootstrap';
 import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
 
-export function User() {
+export function Login() {
   const { federatedSignIn, user, signOut, isAuthenticated } =
     useAuthentication();
-  const [username, setUserName] = useState('');
 
   if (isAuthenticated) {
     return <div>Hi {user?.username} <Button onClick={() => signOut()}> Logout </Button></div>;
@@ -21,4 +19,4 @@ export function User() {
   );
 }
 
-export default User;
+export default Login;

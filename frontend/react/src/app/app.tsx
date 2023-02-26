@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import styles from './app.module.css';
-import AppBar from './appbar/appbar';
-import User from './user/user';
+import AppBar from './components/appbar/appbar';
+import { Login } from './components/authentication';
 import { Container } from 'react-bootstrap';
 import { AuthenticationProvider  } from './provider'
 
@@ -10,7 +10,7 @@ export function App() {
     <AuthenticationProvider>
       <AppBar></AppBar>
       <Container>
-        <User></User>
+        <Login></Login>
       </Container>
     </AuthenticationProvider>
   );

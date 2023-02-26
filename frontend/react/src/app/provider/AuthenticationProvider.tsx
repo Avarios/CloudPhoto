@@ -6,7 +6,7 @@ import {
 import { Amplify, Auth, Hub } from 'aws-amplify';
 import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
 import { configuration } from 'aws.exports';
-import { IUser } from '../common';
+import { IUser } from '../components/common';
 import { AuthenticationContext } from './AuthenticationContext';
 
 Amplify.configure({
@@ -24,7 +24,7 @@ const AuthenticationProvider = ({ children }: IAuthenticationProviderProps) => {
 
   const getCurrentUser = async () => {
     try {
-      console.log('Fetching current user');
+      console.debug('Fetching current user');
       const curUser = await Auth.currentAuthenticatedUser();
       const { picture, email, preferred_username } = curUser.attributes;
       setIsAuthenticated(curUser);
@@ -51,14 +51,12 @@ const AuthenticationProvider = ({ children }: IAuthenticationProviderProps) => {
     if(!user) {
       getCurrentUser();
     }
-    
 
-    // listening for auth change events
     const authListener = Hub.listen(
       'auth',
       async ({ payload: { event, data } }) => {
-        console.log('Auth Status Changed Event: ', event);
-        console.log('Auth Status Changed Data: ', data);
+        console.debug('Auth Status Changed Event: ', event);
+        console.debug('Auth Status Changed Data: ', data);
         switch (event) {
           case 'signIn':
             await getCurrentUser();
