@@ -1,7 +1,6 @@
 import {
   useState,
-  useEffect,
-  useMemo
+  useEffect
 } from 'react';
 import { Amplify, Auth, Hub } from 'aws-amplify';
 import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
