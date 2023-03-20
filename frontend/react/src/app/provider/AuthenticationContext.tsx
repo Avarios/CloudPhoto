@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
 import { createContext } from 'react';
-import { IUser } from '../common';
+import { IUser } from '../components/common';
 
 interface IAuthenticationContext {
     federatedSignIn(provider: CognitoHostedUIIdentityProvider): unknown;

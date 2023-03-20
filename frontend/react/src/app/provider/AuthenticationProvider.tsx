@@ -4,12 +4,12 @@ import {
 } from 'react';
 import { Amplify, Auth, Hub } from 'aws-amplify';
 import { CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
-import { configuration } from 'aws.exports';
+import { authenticationConfiguration } from './AuthenticationConfiguration';
 import { IUser } from '../components/common';
 import { AuthenticationContext } from './AuthenticationContext';
 
 Amplify.configure({
-  Auth: configuration.Auth
+  Auth: authenticationConfiguration
 });
 
 
@@ -50,7 +50,6 @@ const AuthenticationProvider = ({ children }: IAuthenticationProviderProps) => {
     if(!user) {
       getCurrentUser();
     }
-
     const authListener = Hub.listen(
       'auth',
       async ({ payload: { event, data } }) => {
