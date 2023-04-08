@@ -119,9 +119,7 @@ export class Cognito extends Construct {
         });
 
         userPoolDomain.signInUrl(appClient, { redirectUri: redirectUri })
-        //We are using Amplify, and this framework does not support client secret.
         /*
-
         // Create Custom Ressource just to get the ClientSecret.
         const describeCognitoUserPoolClient = new AwsCustomResource(
             this,
@@ -143,9 +141,6 @@ export class Cognito extends Construct {
                 }),
             }
         )
-
-        })
-
         
         const userPoolClientSecret = describeCognitoUserPoolClient.getResponseField(
             'UserPoolClient.ClientSecret'
@@ -155,7 +150,6 @@ export class Cognito extends Construct {
             value: userPoolClientSecret,
         })
         */
-
         new CfnOutput(parent, 'CloudPhotoClientUserPoolID', {
             value: userPool.userPoolId,
             description: 'The user pool id',
