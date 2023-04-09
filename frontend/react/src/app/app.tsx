@@ -16,20 +16,14 @@ export function App() {
         overrides: [defaultDarkModeOverride],
       }}
     >
-      <div className='container'>
-        <Grid
-          templateColumns="1fr 1fr 1fr"
-          gap={'small'}
-          rowGap={'xxs'}
-        >
-          <View columnSpan={3}>
-            <TopBar></TopBar>
-          </View>
-          <View>
-            <Main></Main>
-          </View>
-        </Grid>
-      </div>
+      <Grid templateColumns="1fr 1fr 1fr 1fr " gap={'small'} rowGap={'xxs'}>
+        <View columnSpan={4}>
+          <TopBar></TopBar>
+        </View>
+        <View>
+          <Main></Main>
+        </View>
+      </Grid>
     </ThemeProvider>
   );
 }

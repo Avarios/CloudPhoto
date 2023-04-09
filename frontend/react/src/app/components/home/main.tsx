@@ -1,7 +1,5 @@
 export function Main() {
     return (
-        <>
-            MAIN
-        </>
+        <div></div>
     )
 }

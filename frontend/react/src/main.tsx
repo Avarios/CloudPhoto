@@ -5,6 +5,7 @@ import App from './app/app';
 
 import { Amplify } from 'aws-amplify';
 import { configuration } from './aws.exports';
+import { Authenticator } from '@aws-amplify/ui-react';
 
 Amplify.configure(configuration);
 
@@ -13,6 +14,8 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <StrictMode>
-    <App />
+    <Authenticator.Provider>
+      <App />
+    </Authenticator.Provider>
   </StrictMode>
 );
