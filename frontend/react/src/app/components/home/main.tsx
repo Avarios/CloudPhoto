@@ -1,5 +1,5 @@
 export function Main() {
     return (
-        <div></div>
+        <div>HI ! from main</div>
     )
 }
