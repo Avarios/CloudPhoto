@@ -111,45 +111,16 @@ export class Cognito extends Construct {
         appClient.applyRemovalPolicy(RemovalPolicy.DESTROY);
         appClient.node.addDependency(googleProvider);
 
-
+        userPool.applyRemovalPolicy(RemovalPolicy.DESTROY);
         const userPoolDomain = userPool.addDomain('CloudPhotoUserPoolDomain', {
             cognitoDomain: {
-                domainPrefix: cognitoDomain
+                domainPrefix: cognitoDomain,
             }
         });
 
+        userPoolDomain.applyRemovalPolicy(RemovalPolicy.DESTROY);
         userPoolDomain.signInUrl(appClient, { redirectUri: redirectUri })
-        /*
-        // Create Custom Ressource just to get the ClientSecret.
-        const describeCognitoUserPoolClient = new AwsCustomResource(
-            this,
-            'DescribeCognitoUserPoolClient',
-            {
-                resourceType: 'Custom::DescribeCognitoUserPoolClient',
-                onCreate: {
-                    region: parent.region,
-                    service: 'CognitoIdentityServiceProvider',
-                    action: 'describeUserPoolClient',
-                    parameters: {
-                        UserPoolId: userPool.userPoolId,
-                        ClientId: appClient.userPoolClientId,
-                    },
-                    physicalResourceId: PhysicalResourceId.of(appClient.userPoolClientId),
-                },
-                policy: AwsCustomResourcePolicy.fromSdkCalls({
-                    resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-                }),
-            }
-        )
-        
-        const userPoolClientSecret = describeCognitoUserPoolClient.getResponseField(
-            'UserPoolClient.ClientSecret'
-        ) 
-        
-        new CfnOutput(this, 'UserPoolClientSecret', {
-            value: userPoolClientSecret,
-        })
-        */
+
         new CfnOutput(parent, 'CloudPhotoClientUserPoolID', {
             value: userPool.userPoolId,
             description: 'The user pool id',
@@ -157,6 +128,11 @@ export class Cognito extends Construct {
 
         new CfnOutput(parent, 'CloudPhotoCognitoUrl', {
             value: `${userPoolDomain.domainName}.auth.${parent.region}.amazoncognito.com/oauth2/authorize?client_id=${appClient.userPoolClientId}&response_type=code&scope=email+openid+profile&redirect_uri=${redirectUri}`,
+            description: 'Domain Name Congito',
+        });
+
+        new CfnOutput(parent, 'CloudPhotoOauthDomain', {
+            value: `${userPoolDomain.domainName}`,
             description: 'Domain Name Congito',
         });
 

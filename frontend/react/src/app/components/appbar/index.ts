@@ -1,3 +1,3 @@
-import { TopBar } from './topbar';
+import { AppBar } from './appbar';
 
-export { TopBar }
+export { AppBar }

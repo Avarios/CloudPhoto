@@ -44,11 +44,8 @@
   },
   "dependencies": {
     "@aws-amplify/auth": "^5.1.8",
-    "@chakra-ui/react": "^2.5.5",
-    "@emotion/react": "^11.10.6",
-    "@emotion/styled": "^11.10.6",
+    "antd": "^5.4.2",
     "aws-amplify": "^5.0.14",
-    "framer-motion": "^10.11.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "4.8.0",

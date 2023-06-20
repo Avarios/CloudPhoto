@@ -1,10 +1,20 @@
+import { AppBar } from './components/appbar';
+
+import { Layout } from 'antd';
+//import './app.css';
+const { Content, Footer } = Layout;
 
 export function App() {
   return (
-    <>
-    <div>APPBAR</div>
-    <div>MAIN</div>
-    </>
+    <Layout>
+      <AppBar/>
+      <Content>
+
+      </Content>
+      <Footer>
+
+      </Footer>
+    </Layout>
   );
 }
 
