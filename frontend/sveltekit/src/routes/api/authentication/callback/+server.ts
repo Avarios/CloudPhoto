@@ -1,7 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from "@sveltejs/kit";
 import { PUBLIC_CALLBACKURL, PUBLIC_COGNITO_CLIENTID, PUBLIC_COGNITO_URL } from '$env/static/public';
-import { PRIVATE_COGNITO_CLIENT_SECRET } from '$env/static/private';
 
 export const GET = (async ({ url, fetch }) => {
     //SIGNIN URL FOR GOOGLE : https://chaosphoto.auth.eu-central-1.amazoncognito.com/oauth2/authorize?response_type=code&redirect_uri=http://localhost:5173/api/authentication/callback&
@@ -13,8 +12,6 @@ export const GET = (async ({ url, fetch }) => {
         throw error(400, "No code provided");
     }
     console.log("received code : " + code);
-    const basicToken = btoa(`${PUBLIC_COGNITO_CLIENTID}:${PRIVATE_COGNITO_CLIENT_SECRET}`);
-    console.log("basicToken : " + basicToken);
 
     const urlParams = {
         "grant_type": "authorization_code",
