@@ -35,6 +35,11 @@ export class Cognito extends Construct {
             description: "Specify the URL to your callback in the webapp"
         }).valueAsString;
 
+        const useClientSecret = new CfnParameter(parent, 'useClientSecret', {
+            type: "String",
+            description: "Specify the URL to your callback in the webapp"
+        }).valueAsString;
+
         const userPool = new UserPool(parent, 'CloudPhotoUserPool', {
             accountRecovery: AccountRecovery.EMAIL_ONLY,
             mfa: Mfa.OPTIONAL,
@@ -83,7 +88,7 @@ export class Cognito extends Construct {
                 profilePicture: ProviderAttribute.GOOGLE_PICTURE,
                 familyName: ProviderAttribute.GOOGLE_FAMILY_NAME,
                 preferredUsername: ProviderAttribute.GOOGLE_NAME
-            },
+            }
         });
         googleProvider.applyRemovalPolicy(RemovalPolicy.DESTROY);
         userPool.identityProviders.push(googleProvider);
@@ -92,7 +97,7 @@ export class Cognito extends Construct {
             userPool: userPool,
             accessTokenValidity: Duration.days(1),
             idTokenValidity: Duration.days(1),
-            generateSecret: true,
+            generateSecret: useClientSecret === 'true',
             refreshTokenValidity: Duration.days(1),
             oAuth: {
                 callbackUrls: [
@@ -126,10 +131,12 @@ export class Cognito extends Construct {
         userPoolDomain.signInUrl(appClient, { redirectUri: redirectUri })
 
 
+        if (useClientSecret === 'true') {
+            new CfnOutput(this, 'UserPoolClientSecret', {
+                value: appClient.userPoolClientSecret.unsafeUnwrap(),
+            })
+        }
 
-        new CfnOutput(this, 'UserPoolClientSecret', {
-            value: appClient.userPoolClientSecret.unsafeUnwrap(),
-        })
 
         new CfnOutput(parent, 'CloudPhotoClientUserPoolID', {
             value: userPool.userPoolId,

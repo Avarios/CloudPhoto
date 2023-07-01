@@ -4,6 +4,6 @@ import Autentication from './AuthenticationView.vue'
 
 <template>
   <main>
-    <div>Welcoem to CloudPhoto</div>
+    <div>HOME VIEW</div>
   </main>
 </template>
