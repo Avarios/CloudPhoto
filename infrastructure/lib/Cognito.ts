@@ -121,6 +121,35 @@ export class Cognito extends Construct {
         userPoolDomain.applyRemovalPolicy(RemovalPolicy.DESTROY);
         userPoolDomain.signInUrl(appClient, { redirectUri: redirectUri })
 
+        const describeCognitoUserPoolClient = new AwsCustomResource(
+            this,
+            'DescribeCognitoUserPoolClient',
+            {
+              resourceType: 'Custom::DescribeCognitoUserPoolClient',
+              onCreate: {
+                region: parent.region,
+                service: 'CognitoIdentityServiceProvider',
+                action: 'describeUserPoolClient',
+                parameters: {
+                  UserPoolId: userPool.userPoolId,
+                  ClientId: appClient.userPoolClientId,
+                },
+                physicalResourceId: PhysicalResourceId.of(appClient.userPoolClientId),
+              },
+              // TODO: can we restrict this policy more?
+              policy: AwsCustomResourcePolicy.fromSdkCalls({
+                resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+              }),
+            }
+          )
+      
+          const userPoolClientSecret = describeCognitoUserPoolClient.getResponseField(
+            'UserPoolClient.ClientSecret'
+          )
+          new CfnOutput(this, 'UserPoolClientSecret', {
+            value: userPoolClientSecret,
+          })
+
         new CfnOutput(parent, 'CloudPhotoClientUserPoolID', {
             value: userPool.userPoolId,
             description: 'The user pool id',
