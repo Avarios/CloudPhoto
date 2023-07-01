@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnOutput, CfnParameter, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import {
     AccountRecovery, Mfa, OAuthScope, ProviderAttribute, UserPool,
+    UserPoolClient,
     UserPoolClientIdentityProvider,
     UserPoolEmail, UserPoolIdentityProviderGoogle, VerificationEmailStyle
 } from 'aws-cdk-lib/aws-cognito';
@@ -87,10 +88,11 @@ export class Cognito extends Construct {
         googleProvider.applyRemovalPolicy(RemovalPolicy.DESTROY);
         userPool.identityProviders.push(googleProvider);
 
-        const appClient = userPool.addClient('webClientCloudPhoto', {
+        const appClient = new UserPoolClient(parent, 'webClientCloudPhoto', {
+            userPool: userPool,
             accessTokenValidity: Duration.days(1),
             idTokenValidity: Duration.days(1),
-            generateSecret: false,
+            generateSecret: true,
             refreshTokenValidity: Duration.days(1),
             oAuth: {
                 callbackUrls: [
@@ -108,6 +110,8 @@ export class Cognito extends Construct {
                 UserPoolClientIdentityProvider.COGNITO
             ]
         });
+
+
         appClient.applyRemovalPolicy(RemovalPolicy.DESTROY);
         appClient.node.addDependency(googleProvider);
 
@@ -121,34 +125,11 @@ export class Cognito extends Construct {
         userPoolDomain.applyRemovalPolicy(RemovalPolicy.DESTROY);
         userPoolDomain.signInUrl(appClient, { redirectUri: redirectUri })
 
-        const describeCognitoUserPoolClient = new AwsCustomResource(
-            this,
-            'DescribeCognitoUserPoolClient',
-            {
-              resourceType: 'Custom::DescribeCognitoUserPoolClient',
-              onCreate: {
-                region: parent.region,
-                service: 'CognitoIdentityServiceProvider',
-                action: 'describeUserPoolClient',
-                parameters: {
-                  UserPoolId: userPool.userPoolId,
-                  ClientId: appClient.userPoolClientId,
-                },
-                physicalResourceId: PhysicalResourceId.of(appClient.userPoolClientId),
-              },
-              // TODO: can we restrict this policy more?
-              policy: AwsCustomResourcePolicy.fromSdkCalls({
-                resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-              }),
-            }
-          )
-      
-          const userPoolClientSecret = describeCognitoUserPoolClient.getResponseField(
-            'UserPoolClient.ClientSecret'
-          )
-          new CfnOutput(this, 'UserPoolClientSecret', {
-            value: userPoolClientSecret,
-          })
+
+
+        new CfnOutput(this, 'UserPoolClientSecret', {
+            value: appClient.userPoolClientSecret.unsafeUnwrap(),
+        })
 
         new CfnOutput(parent, 'CloudPhotoClientUserPoolID', {
             value: userPool.userPoolId,
