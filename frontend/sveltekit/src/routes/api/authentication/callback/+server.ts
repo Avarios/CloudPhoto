@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { RequestHandler } from "@sveltejs/kit";
-import { PUBLIC_CALLBACKURL, PUBLIC_COGNITO_CLIENTID, PUBLIC_COGNITO_URL } from '$env/static/public';
+import { PUBLIC_CALLBACKURL, PUBLIC_COGNITO_CLIENTID, PUBLIC_COGNITO_URL, PUBLIC_USERCOOKIE_NAME } from '$env/static/public';
 
 export const GET = (async ({ url, fetch, cookies }) => {
     //SIGNIN URL FOR GOOGLE : https://chaosphoto.auth.eu-central-1.amazoncognito.com/oauth2/authorize?response_type=code&redirect_uri=http://localhost:5173/api/authentication/callback&
@@ -25,7 +25,6 @@ export const GET = (async ({ url, fetch, cookies }) => {
     try {
         const tokenResponse = await fetch(`${PUBLIC_COGNITO_URL}/oauth2/token`, {
             headers: {
-                //"Authorization": `Basic ${btoa(PUBLIC_COGNITO_CLIENTID)}`,
                 "Content-Type": "application/x-www-form-urlencoded",
 
             },
@@ -47,7 +46,8 @@ export const GET = (async ({ url, fetch, cookies }) => {
         });
         const userInfoResult = await userInfoResponse.json();
         console.log(userInfoResult);
-        cookies.set("user", JSON.stringify(userInfoResult));
+        console.log('setting cookie with name :' + PUBLIC_USERCOOKIE_NAME);
+        cookies.set(PUBLIC_USERCOOKIE_NAME, JSON.stringify(userInfoResult), { path: '/' });
     } catch (err) {
         console.log(err);
         throw error(500, JSON.stringify(err));

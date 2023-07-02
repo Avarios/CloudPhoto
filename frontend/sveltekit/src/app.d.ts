@@ -3,7 +3,9 @@
 declare global {
 	namespace App {
 		// interface Error {}
-		// interface Locals {}
+		interface Locals {
+			user: import('$lib/types').User | null
+		}
 		// interface PageData {}
 		// interface Platform {}
 	}
