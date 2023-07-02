@@ -1,10 +1,9 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-  import { user } from '$lib'
+	import { user } from '$lib';
 	export let data: PageData;
 
-  user.set(data.user);
-
+	user.set(data.user);
 </script>
 
 <nav>

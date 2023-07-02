@@ -12,9 +12,10 @@
 	const googleUrl = `${PUBLIC_COGNITO_URL}/oauth2/authorize?response_type=code&redirect_uri=${data.localurl}${PUBLIC_CALLBACKURL}&scope=openid+profile+aws.cognito.signin.user.admin&identity_provider=Google&client_id=${PUBLIC_COGNITO_CLIENTID}`;
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<h1>Home</h1>
 
-<a href={googleUrl}> Login with Google</a>
+{#if !$user}
+	<a href={googleUrl}> Login with Google</a>
+{/if}
 
 <div>{$user?.showName}</div>
