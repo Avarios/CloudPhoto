@@ -1,8 +1,8 @@
 import { error, redirect } from '@sveltejs/kit';
-import type { RequestHandler } from "@sveltejs/kit";
-import { PUBLIC_CALLBACKURL, PUBLIC_COGNITO_CLIENTID, PUBLIC_COGNITO_URL, PUBLIC_USERCOOKIE_NAME } from '$env/static/public';
+import { PUBLIC_CALLBACKURL, PUBLIC_COGNITO_CLIENTID, PUBLIC_COGNITO_URL, PUBLIC_COOKIE_NAME } from '$env/static/public';
+import type { PageServerLoad } from './$types';
 
-export const GET = (async ({ url, fetch, cookies }) => {
+export const load = (async ({ cookies, url, fetch }) => {
     //See https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html for AWS Cognito flow
     const code = url.searchParams.get("code");
     if (!code) {
@@ -16,13 +16,11 @@ export const GET = (async ({ url, fetch, cookies }) => {
         "redirect_uri": `${url.origin}${PUBLIC_CALLBACKURL}`,
         "code": code
     }
-    const formBody = Object.entries(urlParams).map(([key, value]) => encodeURIComponent(key) + '=' + encodeURIComponent(value)).join('&')
-    console.log("formBody : " + formBody);
     const tokenResponse = await fetch(`${PUBLIC_COGNITO_URL}/oauth2/token`, {
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: formBody,
+        body: Object.entries(urlParams).map(([key, value]) => encodeURIComponent(key) + '=' + encodeURIComponent(value)).join('&'),
         method: "POST"
     });
 
@@ -30,23 +28,23 @@ export const GET = (async ({ url, fetch, cookies }) => {
         console.log(tokenResponse.status);
         console.log(tokenResponse.statusText);
         console.log(await tokenResponse.text());
-        throw redirect(302,'/error');
+        throw redirect(302, '/error');
     }
 
     const tokenResult = await tokenResponse.json();
     console.debug(tokenResult);
-    // Call UserInfo Endpoint
     const userInfoResponse = await fetch(`${PUBLIC_COGNITO_URL}/oauth2/userInfo`, {
         headers: { "Authorization": `Bearer ${tokenResult.access_token}` }
     });
     const userInfoResult = await userInfoResponse.json();
-    if(userInfoResult.email_verified !== 'true') {
-        console.debug('email not verified');
-        cookies.delete(PUBLIC_USERCOOKIE_NAME);
-        throw redirect(302,'/authentication/notverified');
-    }
     console.debug(userInfoResult);
-    cookies.set(PUBLIC_USERCOOKIE_NAME, JSON.stringify(userInfoResult), { path: '/', maxAge: tokenResult.expires_in });
-    throw redirect(302, "/");
-
-}) satisfies RequestHandler;
+    if (userInfoResult.email_verified !== 'true') {
+        console.debug('email not verified');
+        cookies.delete(PUBLIC_COOKIE_NAME);
+        throw redirect(302, '/authentication/notverified');
+    }
+    const cookieObject = { ...userInfoResult, "token": tokenResult.id_token }
+    cookies.set(PUBLIC_COOKIE_NAME, JSON.stringify(cookieObject), { path: '/', maxAge: tokenResult.expires_in });
+    console.debug("redirecting to /")
+    throw redirect(302, '/');
+}) satisfies PageServerLoad;
