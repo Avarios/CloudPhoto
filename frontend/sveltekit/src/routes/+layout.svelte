@@ -8,16 +8,9 @@
 	user.set(data.user);
 </script>
 
-<nav>
-	<AppBar></AppBar>
-	<ul>
-		<li>
-			<a href="/">Home</a>
-		</li>
-		<li>
-			<a href="/posts">Posts</a>
-		</li>
-	</ul>
-</nav>
+<div id="main">
+	<AppBar/>	
+	<slot/>
+</div>
 
-<slot />
+

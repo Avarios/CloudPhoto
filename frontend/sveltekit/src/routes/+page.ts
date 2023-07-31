@@ -1,7 +1,5 @@
 import type { PageLoad } from './$types';
 
-export const load = (({ url }) => {
-    return {
-        localurl: url.origin
-    };
+export const load = (({ }) => {
+
 }) satisfies PageLoad;
