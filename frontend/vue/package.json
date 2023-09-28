@@ -13,9 +13,7 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false"
   },
   "dependencies": {
-    "@aws-amplify/ui-vue": "^3.1.18",
     "agnostic-vue": "^1.1.3",
-    "aws-amplify": "^5.2.5",
     "pinia": "^2.1.3",
     "vue": "^3.3.4",
     "vue-router": "^4.2.2"

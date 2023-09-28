@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import "../app.css";
+	import "../app.postcss";
 	import { user } from '$lib';
 	export let data: PageData;
 
@@ -9,8 +9,8 @@
 </script>
 
 <div id="main">
-	<AppBar/>	
-	<slot/>
+	<AppBar></AppBar>	
+	<slot></slot>
 </div>
 
 
