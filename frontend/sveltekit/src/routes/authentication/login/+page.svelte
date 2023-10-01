@@ -6,6 +6,6 @@
 
 </script>
 
-TEST
+<a href={data.googleUrl}>Logon Google</a>
 
 
