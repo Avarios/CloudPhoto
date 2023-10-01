@@ -29,19 +29,17 @@
 
   header {
     display: flex;
-    justify-content: flex-end;
     align-items: center;
     padding: 20px 50px;
     box-shadow: 0 1px 8px #ddd;
   }
 
   #nav-data {
-    margin-right: auto;
     display: flex;
+    margin-right: auto;
   }
 
   #nav-data a {
-    margin-right: auto;
     font-size: 1.5em;
     text-decoration: none;
     transition: all 0.3s ease 0s;
@@ -55,6 +53,9 @@
     width: 80px; 
     border-radius: 20%;
     opacity: 0.5;
+  }
+
+  header ul {
     margin-right: auto;
   }
 
