@@ -13,4 +13,13 @@
 	<slot></slot>
 </div>
 
+<style>
+#main {
+    margin: 0px;
+    padding: 0px;
+    min-height: 100vh;
+    font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+}
+</style>
+
 
