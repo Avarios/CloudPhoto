@@ -7,19 +7,15 @@
 </script>
 
 <!-- Navbar -->
-<header>
-  <div id="nav-data">
-    <a href="/home"> Cloud Photo</a>
-    <img src={logo} alt=""/>
-  </div>
-
-  <nav>
-      <ul>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Services</a></li>
-          <li><a href="#">Contact</a></li>
-      </ul>
-  </nav>
+<header class="header">
+  <a href="/home" class="logo"> Cloud Photo</a>
+  <img src={logo} alt=""/>
+  <ul>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Services</a></li>
+      <li><a href="#">Contact</a></li>
+  </ul>
+  <button>PROFILE</button>
 </header>
 
 <style>
@@ -27,45 +23,43 @@
     font-family: Arial, Helvetica;
   }
 
-  header {
-    display: flex;
-    align-items: center;
-    padding: 20px 50px;
-    box-shadow: 0 1px 8px #ddd;
+  .header {
+    display: grid;
+    grid-template-columns: 100px 50px 1fr auto;
+    justify-content: flex-start;
+    justify-items: center;
   }
 
-  #nav-data {
-    display: flex;
-    margin-right: auto;
-  }
-
-  #nav-data a {
-    font-size: 1.5em;
-    text-decoration: none;
-    transition: all 0.3s ease 0s;
-  }
-
-  #nav-data a:hover {
-    transform: scale(1.1);
-  }
-
-  #nav-data img {
-    width: 80px; 
+  .header img {
     border-radius: 20%;
     opacity: 0.5;
+    grid-column-start: 2;
   }
 
-  header ul {
-    margin-right: auto;
+  .header a {
+    grid-column-start: 1;  
   }
 
-  header li {
-    list-style: none;
-    display: inline-block;
-    padding: 0 20px;
+  .logo:hover {
+    transform: scale(1.3);
+    transition: all 1s;
   }
 
-  header a:hover {
-    color: #b2dfdb;
+  .header > ul  {
+    gap: 1em;
+    grid-column-start: 3;
+    display: flex;
+    flex-direction: row;
   }
+
+  .header > ul > li:hover {
+    transform: scale(1.2);
+    transition: all 500ms;
+  }
+
+  .header button {
+    grid-column-start: 4;
+    gap: 1em
+  }
+
 </style>
